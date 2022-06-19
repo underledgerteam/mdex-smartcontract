@@ -40,3 +40,10 @@ Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_
 ```shell
 npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
 ```
+# Contract Address
+
+Contract Addres for using in our project
+
+| Name | Chain | Address |
+| --- | --- | --- |
+| `Bridge Controller` | Ethereum Rinkeby Testnet | **0x00000000000000000**|
