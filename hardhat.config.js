@@ -5,6 +5,8 @@ require("@nomiclabs/hardhat-waffle");
 require("hardhat-gas-reporter");
 require("solidity-coverage");
 require("@nomiclabs/hardhat-etherscan");
+require("@nomiclabs/hardhat-vyper");
+
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
@@ -65,6 +67,9 @@ module.exports = {
     tests: "./test",
     cache: "./cache",
     artifacts: "./artifacts",
+  },
+  vyper: {
+    compilers: [{ version: "0.2.1" }, { version: "0.3.0" }],
   },
   solidity: {
     compilers: [
