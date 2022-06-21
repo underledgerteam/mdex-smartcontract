@@ -1,5 +1,5 @@
 name: Slither Analysis
-on: 
+on:
   push:
     branches: [main]
 jobs:
@@ -7,8 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        env: 
+        env:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          ROPSTEN_URL: ${{ secrets.PRIVATE_KEY }}
       - uses: crytic/slither-action@v0.1.1
       - name: Test
-        run: echo ${{ secrets.PRIVATE_KEY }}    
+        run: echo ${{ secrets.PRIVATE_KEY }}
