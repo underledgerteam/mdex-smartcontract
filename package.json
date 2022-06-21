@@ -10,7 +10,8 @@
     "deploy:kovan": "npx hardhat run --network kovan",
     "deploy:goerli": "npx hardhat run --network goerli",
     "test": "hardhat test --network hardhat",
-    "test-net": "hardhat test --network rinkeby"
+    "test-net": "hardhat test --network rinkeby",
+    "test-evm-versions": "bash test-evm-versions.bash"
   },
   "author": "",
   "license": "ISC",
