@@ -23,8 +23,14 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-const { PRIVATE_KEY, RINKEBY_URL, ROPSTEN_URL, KOVAN_URL, GOERLI_URL } =
-  process.env;
+const {
+  PRIVATE_KEY,
+  RINKEBY_URL,
+  ROPSTEN_URL,
+  KOVAN_URL,
+  GOERLI_URL,
+  ETHERSCAN_API_KEY,
+} = process.env;
 
 module.exports = {
   defaultNetwork: "localhost",
@@ -61,10 +67,10 @@ module.exports = {
   },
   etherscan: {
     apiKey: {
-      ropsten: "J7EZKJ8CMAIYEV8BVQZTF5Y5C9813X6U4C",
-      rinkeby: "J7EZKJ8CMAIYEV8BVQZTF5Y5C9813X6U4C",
-      kovan: "J7EZKJ8CMAIYEV8BVQZTF5Y5C9813X6U4C",
-      goerli: "J7EZKJ8CMAIYEV8BVQZTF5Y5C9813X6U4C",
+      ropsten: `${ETHERSCAN_API_KEY}`,
+      rinkeby: `${ETHERSCAN_API_KEY}`,
+      kovan: `${ETHERSCAN_API_KEY}`,
+      goerli: `${ETHERSCAN_API_KEY}`,
     },
   },
   paths: {
