@@ -13,10 +13,10 @@ on:
       - "test/**"
 
 env:
-  ROPSTEN_URL: ${{secrets.ROPSTEN_URL}}
-  RINKEBY_URL: ${{secrets.RINKEBY_URL}}
-  KOVAN_URL: ${{secrets.KOVAN_URL}}
-  GOERLI_URL: ${{secrets.GOERLI_URL}}
+  ROPSTEN_URL: ${{secrets.PRIVATE_KEY}}
+  RINKEBY_URL: ${{secrets.PRIVATE_KEY}}
+  KOVAN_URL: ${{secrets.PRIVATE_KEY}}
+  GOERLI_URL: ${{secrets.PRIVATE_KEY}}
   PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
 
 jobs:
