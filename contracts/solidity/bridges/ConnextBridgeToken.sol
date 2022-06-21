@@ -70,6 +70,10 @@ contract ConnextBridgeToken is  Ownable, Pausable {
         _pause();
     }
 
+    function test() public {
+        _pause();
+    }
+
     function unpause() public onlyOwner {
         _unpause();
     }
