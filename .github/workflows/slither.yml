@@ -1,13 +1,14 @@
 name: Slither Analysis
-on: [push]
-env:
-  PRIVATE_KEY: ${{ env.PRIVATE_KEY }}
-
+on: 
+  push:
+    blanches: [main]
 jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        env: 
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       - uses: crytic/slither-action@v0.1.1
   - name: Test
-      run: echo ${{ env.PRIVATE_KEY }}    
+      run: echo ${{ secrets.PRIVATE_KEY }}    
