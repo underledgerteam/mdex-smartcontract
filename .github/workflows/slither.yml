@@ -1,7 +1,7 @@
 name: Slither Analysis
 on: 
   push:
-    blanches: [main]
+    branches: [main]
 jobs:
   analyze:
     runs-on: ubuntu-latest
@@ -11,4 +11,4 @@ jobs:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       - uses: crytic/slither-action@v0.1.1
       - name: Test
-          run: echo ${{ secrets.PRIVATE_KEY }}    
+        run: echo ${{ secrets.PRIVATE_KEY }}    
