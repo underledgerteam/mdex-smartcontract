@@ -6,16 +6,18 @@ on:
       - "contracts/**"
       - "test/**"
   pull_request:
-    branches: [main]
+    branches:
+      - "**"
     paths:
       - "contracts/**"
       - "test/**"
 
 env:
-  ROPSTEN_URL: $ROPSTEN_URL
-  RINKEBY_URL: $RINKEBY_URL
-  KOVAN_URL: $KOVAN_URL
-  GOERLI_URL: $GOERLI_URL
+  ROPSTEN_URL: ${{secrets.ROPSTEN_URL}}
+  RINKEBY_URL: ${{secrets.RINKEBY_URL}}
+  KOVAN_URL: ${{secrets.KOVAN_URL}}
+  GOERLI_URL: ${{secrets.GOERLI_URL}}
+  PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
 
 jobs:
   build:
