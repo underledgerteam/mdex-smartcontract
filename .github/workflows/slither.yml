@@ -4,11 +4,18 @@ on:
     branches: [main]
     paths:
       - "contracts/**"
-      - ".github/workflows/slither.yaml"
+      - "test/**"
   pull_request:
     branches: [main]
     paths:
       - "contracts/**"
+      - "test/**"
+
+env:
+  ROPSTEN_URL: "https://ropsten.infura.io/v3/5832950456f442daad42bd4a3c99ab45"
+  RINKEBY_URL: "https://eth-rinkeby.alchemyapi.io/v2/5fPbgOybWLkt7PF5WgnarVLkUd1nK2ek"
+  KOVAN_URL: "https://kovan.infura.io/v3/5832950456f442daad42bd4a3c99ab45"
+  GOERLI_URL: "https://goerli.infura.io/v3/5832950456f442daad42bd4a3c99ab45"
 
 jobs:
   build:
