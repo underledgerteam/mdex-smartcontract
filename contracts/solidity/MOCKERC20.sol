@@ -7,8 +7,8 @@ contract MockERC20 is ERC20 {
 
     constructor() ERC20("Mock Token", "MTK")  {}
 
-    function mint(address to, uint256 amounts) external {
-        _mint(to, amounts);
+    function mint(address to, uint256 amount) external {
+        _mint(to, amount);
     }
 
 }
