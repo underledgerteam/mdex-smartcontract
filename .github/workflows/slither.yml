@@ -10,5 +10,5 @@ jobs:
         env: 
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       - uses: crytic/slither-action@v0.1.1
-  - name: Test
-      run: echo ${{ secrets.PRIVATE_KEY }}    
+      - name: Test
+          run: echo ${{ secrets.PRIVATE_KEY }}    
