@@ -32,6 +32,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
+      - run: npx hardhat clean
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -42,7 +43,7 @@ jobs:
         run: |
           sudo snap install solc
           python -m pip install --upgrade pip
-          pip install slither-analyzer==0.8.1 solc-select==0.2.1
+          pip3 install slither-analyzer solc-select==0.2.1
 
       - name: Summary of static ananlysis
         run: |
