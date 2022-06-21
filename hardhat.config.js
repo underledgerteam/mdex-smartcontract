@@ -23,29 +23,34 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-const { PRIVATE_KEY, API_KEY_ROPSTEN, API_KEY_RINKEBY } = process.env;
+const { PRIVATE_KEY, RINKEBY_URL, ROPSTEN_URL, KOVAN_URL, GOERLI_URL } =
+  process.env;
 
 module.exports = {
   defaultNetwork: "localhost",
   networks: {
-    hardhat: {},
+    hardhat: {
+      forking: {
+        url: "https://eth-mainnet.alchemyapi.io/v2/<key>",
+      },
+    },
     ropsten: {
-      url: `https://ropsten.infura.io/v3/${API_KEY_ROPSTEN}`,
+      url: `${ROPSTEN_URL}`,
       accounts: [PRIVATE_KEY],
       chainId: 3,
     },
     rinkeby: {
-      url: `https://rinkeby.infura.io/v3/${API_KEY_RINKEBY}`,
+      url: `${RINKEBY_URL}`,
       accounts: [PRIVATE_KEY],
       chainId: 4,
     },
     kovan: {
-      url: `https://kovan.infura.io/v3/${API_KEY_RINKEBY}`,
+      url: `${KOVAN_URL}`,
       accounts: [PRIVATE_KEY],
       chainId: 42,
     },
     goerli: {
-      url: `https://goerli.infura.io/v3/${API_KEY_RINKEBY}`,
+      url: `${GOERLI_URL}`,
       accounts: [PRIVATE_KEY],
       chainId: 5,
     },
