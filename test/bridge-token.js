@@ -47,7 +47,7 @@ describe("TEST BRIDGE TOKEN", () => {
     );
   });
   printSeperator();
-  console.log("Deploy connext Bridge Token ");
+  console.log("Deploy Connext Bridge Token ");
   printSeperator();
 
   it("Use Case #1 : Should Bridge Token", async () => {
