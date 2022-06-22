@@ -1,23 +1,14 @@
-name: Slither Analysis
-on:
-  push:
-    branches: [main]
+name: CI
+
+on: push
+
 jobs:
-  analyze:
+  ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
         with:
-          node-version: 16.x
+          node-version: 16.x.x
+      - run: npm
       - run: npm ci
-      - run: npm test
-        env:
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          ROPSTEN_URL: ${{ secrets.PRIVATE_KEY }}
-      - uses: crytic/slither-action@v0.1.1
-        env:
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          ROPSTEN_URL: ${{ secrets.PRIVATE_KEY }}
-      - name: Test
-        run: echo ${{ secrets.PRIVATE_KEY }}
