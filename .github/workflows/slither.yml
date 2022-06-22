@@ -12,3 +12,6 @@ jobs:
           node-version: 16.x.x
       - run: npm install
       - run: npm run test
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          ROPSTEN_URL: ${{ secrets.PRIVATE_KEY }}
