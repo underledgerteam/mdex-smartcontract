@@ -9,12 +9,15 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 16.x
+      - run: npm ci
+      - run: npm test
         env:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           ROPSTEN_URL: ${{ secrets.PRIVATE_KEY }}
-      - run: npm ci
-      - run: npm test
       - uses: crytic/slither-action@v0.1.1
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          ROPSTEN_URL: ${{ secrets.PRIVATE_KEY }}
       - name: Test
         run: echo ${{ secrets.PRIVATE_KEY }}
