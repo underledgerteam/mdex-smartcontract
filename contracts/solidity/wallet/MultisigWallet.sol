@@ -9,20 +9,22 @@ contract MultiSigWallet {
     address[] public teams;
     uint public numConfirmationsRequired;
     uint public transactionCount;
+    address public _stableCoin;
 
     struct Transaction {
         uint id;
-        address token;
         address to;
+        address caller;
         uint value;
         bool executed;
         uint numConfirmations;
-        bool isWithdrawETH;
+        uint timestamp;
     }
 
     mapping(address => bool) public isTeam;
     mapping(uint => mapping(address => bool)) public isConfirmed;
-    mapping(uint => Transaction) public allTransaction;
+    mapping(uint => Transaction) public transactionById;
+    mapping(address => mapping(uint => Transaction)) public myTransactionById;
 
     modifier onlyTeam() {
         require(isTeam[msg.sender], "not team");
@@ -31,12 +33,17 @@ contract MultiSigWallet {
 
 
     modifier notExecuted(uint transactionId) {
-        require(!allTransaction[transactionId].executed, "tx already executed");
+        require(!transactionById[transactionId].executed, "tx already executed");
         _;
     }
 
     modifier notConfirmed(uint transactionId) {
         require(!isConfirmed[transactionId][msg.sender], "tx already confirmed");
+        _;
+    }
+
+    modifier ownerNotConfirmed(uint transactionId, address owner) {
+        require(transactionById[transactionId].caller != owner, "owner cannot vote confirm");
         _;
     }
 
@@ -47,8 +54,9 @@ contract MultiSigWallet {
     event ExecuteTransaction(address indexed member, uint indexed transactionId);
 
 
-    constructor(address[] memory team) {
+    constructor(address[] memory team, address stableCoin) {
         require(team.length > 0, "teams required");
+        _stableCoin = stableCoin;
         for (uint i = 0; i < team.length; i++) {
             address member = team[i];
 
@@ -63,43 +71,30 @@ contract MultiSigWallet {
 
     }
 
-    receive() external payable {}
+    function submitWithdrawTransaction(address to, uint value) public onlyTeam {
 
-
-    function submitWithdrawETHTransaction(address to, uint value) public onlyTeam {
+        require(IERC20(_stableCoin).balanceOf(address(this)) >= value, "erc20 insufficient balance");
 
         transactionCount += 1;
 
-        allTransaction[transactionCount] = Transaction({
+        transactionById[transactionCount] = Transaction({
             id: transactionCount,
-            token: address(0),
             to: to,
+            caller: msg.sender,
             value: value,
             executed: false,
             numConfirmations: 0,
-            isWithdrawETH: true
+            timestamp: block.timestamp
         });
 
-        emit WithdrawETH(
-            msg.sender,
-            to,
-            value
-        );
-    }
-
-
-    function submitWithdrawERC20Transaction(address to, address token, uint value) public onlyTeam {
-
-        transactionCount += 1;
-
-        allTransaction[transactionCount] = Transaction({
+        myTransactionById[msg.sender][transactionCount] = Transaction({
             id: transactionCount,
-            token: token,
             to: to,
+            caller: msg.sender,
             value: value,
             executed: false,
             numConfirmations: 0,
-            isWithdrawETH: false
+            timestamp: block.timestamp
         });
 
         emit WithdrawERC20(
@@ -110,56 +105,62 @@ contract MultiSigWallet {
 
     }
 
+    function getBalance() public onlyTeam view returns(uint256) {
+        return IERC20(_stableCoin).balanceOf(address(this));
+    }
 
     function confirmTransaction(uint transactionId)
         public
         onlyTeam  
         notExecuted(transactionId)
         notConfirmed(transactionId)
+        ownerNotConfirmed(transactionId, msg.sender)
     {
-        Transaction storage transaction = allTransaction[transactionId];
+        Transaction storage transaction = transactionById[transactionId];
+        Transaction storage callerTransaction = myTransactionById[transaction.caller][transactionId];
 
         require(transaction.id == transactionId, "tx does not exist");
+        require(callerTransaction.id == transactionId, "tx does not exist");
+
         
         transaction.numConfirmations += 1;
+        callerTransaction.numConfirmations +=  1;
+
         isConfirmed[transactionId][msg.sender] = true;
 
         emit ConfirmTransaction(msg.sender, transactionId);
 
     }
 
+    function  getTransactions() public view returns(Transaction[] memory ) {
+        Transaction[] memory transactions = new Transaction[](transactionCount);
+        for(uint i = 0; i < transactionCount; i++){
+            transactions[i] = transactionById[i];
+        }
+        return transactions;
+    }
+
+
     function executeTransaction(uint transactionId)
         public
         onlyTeam
         notExecuted(transactionId)
     {
-        Transaction memory transaction = allTransaction[transactionId];
+        Transaction storage transaction = transactionById[transactionId];
+        Transaction storage callerTransaction = myTransactionById[transaction.caller][transactionId];
 
         require(
             transaction.numConfirmations >= numConfirmationsRequired,
             "cannot execute tx"
         );
+        require(IERC20(_stableCoin).balanceOf(address(this)) >= transaction.value, "erc20 insufficient balance");
 
+        transaction.executed = true;
+        callerTransaction.executed = true;
 
-        if(transaction.isWithdrawETH){
-            
-            transaction.executed = true;
-            
-            (bool sc, ) = transaction.to.call{value: transaction.value}("");
+        IERC20(_stableCoin).transfer(msg.sender, transaction.value);
 
-            require(sc, "transaction reverted");
-
-            emit ExecuteTransaction(msg.sender, transactionId);
-        }else{
-            transaction.executed = true;
-            IERC20(transaction.token).transfer(msg.sender, transaction.value);
-            emit ExecuteTransaction(msg.sender, transactionId);
-
-        }
+        emit ExecuteTransaction(msg.sender, transactionId);
 
     }
-    
-     
-
-
 }

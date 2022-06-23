@@ -11,4 +11,7 @@ contract MockERC20 is ERC20 {
         _mint(to, amount);
     }
 
+    function transfer(address from, address to, uint256 amount) external {
+        _transfer(from, to, amount);
+    }
 }
