@@ -80,7 +80,7 @@ module.exports = {
     artifacts: "./artifacts",
   },
   vyper: {
-    compilers: [{ version: "0.2.1" }, { version: "0.3.0" }],
+    compilers: [{ version: "0.2.1" }, { version: "0.3.0" }, { version: "0.3.3" }],
   },
   solidity: {
     compilers: [
