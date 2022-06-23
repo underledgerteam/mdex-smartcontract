@@ -9,8 +9,9 @@
     "deploy:ropsten": "npx hardhat run --network ropsten",
     "deploy:kovan": "npx hardhat run --network kovan",
     "deploy:goerli": "npx hardhat run --network goerli",
-    "test": "hardhat test ",
-    "test-net": "hardhat test --network rinkeby"
+    "test": "hardhat test --network hardhat",
+    "test-net": "hardhat test --network rinkeby",
+    "test-all": "hardhat test --network hardhat test/*.js"
   },
   "author": "",
   "license": "ISC",
