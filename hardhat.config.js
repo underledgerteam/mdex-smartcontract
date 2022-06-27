@@ -35,11 +35,7 @@ const {
 module.exports = {
   defaultNetwork: "localhost",
   networks: {
-    hardhat: {
-      forking: {
-        url: `${RINKEBY_URL}`,
-      },
-    },
+    hardhat: {},
     ropsten: {
       url: `${ROPSTEN_URL}`,
       accounts: [PRIVATE_KEY],
@@ -80,7 +76,11 @@ module.exports = {
     artifacts: "./artifacts",
   },
   vyper: {
-    compilers: [{ version: "0.2.1" }, { version: "0.3.0" }, { version: "0.3.3" }],
+    compilers: [
+      { version: "0.2.1" },
+      { version: "0.3.0" },
+      { version: "0.3.3" },
+    ],
   },
   solidity: {
     compilers: [

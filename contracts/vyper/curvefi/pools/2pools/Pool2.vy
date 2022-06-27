@@ -338,12 +338,13 @@ def add_liquidity(amounts: uint256[N_COINS], min_mint_amount: uint256):
     else:
         mint_amount = token_supply * (D2 - D0) / D0
 
+
     assert mint_amount >= min_mint_amount, "Slippage screwed you"
 
     # Mint pool tokens
     self.token.mint(msg.sender, 1)
 
-    # log AddLiquidity(msg.sender, amounts, fees, D1, token_supply + mint_amount)
+    log AddLiquidity(msg.sender, amounts, fees, D1, token_supply + mint_amount)
 
 
 @view
