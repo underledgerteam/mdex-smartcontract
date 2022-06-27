@@ -7,3 +7,6 @@ typechain
 #Hardhat files
 cache
 artifacts
+
+# create2
+deployments
