@@ -18,6 +18,7 @@ contract MultiSigWallet {
         uint value;
         bool executed;
         uint numConfirmations;
+        uint numNoConfirmations;
         uint timestamp;
     }
 
@@ -84,6 +85,7 @@ contract MultiSigWallet {
             value: value,
             executed: false,
             numConfirmations: 0,
+            numNoConfirmations: 0,
             timestamp: block.timestamp
         });
 
@@ -94,6 +96,7 @@ contract MultiSigWallet {
             value: value,
             executed: false,
             numConfirmations: 0,
+            numNoConfirmations: 0,
             timestamp: block.timestamp
         });
 
@@ -125,6 +128,29 @@ contract MultiSigWallet {
         
         transaction.numConfirmations += 1;
         callerTransaction.numConfirmations +=  1;
+
+        isConfirmed[transactionId][msg.sender] = true;
+
+        emit ConfirmTransaction(msg.sender, transactionId);
+
+    }
+
+        function noConfirmTransaction(uint transactionId)
+        public
+        onlyTeam  
+        notExecuted(transactionId)
+        notConfirmed(transactionId)
+        ownerNotConfirmed(transactionId, msg.sender)
+    {
+        Transaction storage transaction = transactionById[transactionId];
+        Transaction storage callerTransaction = myTransactionById[transaction.caller][transactionId];
+
+        require(transaction.id == transactionId, "tx does not exist");
+        require(callerTransaction.id == transactionId, "tx does not exist");
+
+        
+        transaction.numNoConfirmations += 1;
+        callerTransaction.numNoConfirmations +=  1;
 
         isConfirmed[transactionId][msg.sender] = true;
 
