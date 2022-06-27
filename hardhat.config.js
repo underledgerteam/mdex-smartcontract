@@ -6,6 +6,7 @@ require("hardhat-gas-reporter");
 require("solidity-coverage");
 require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-vyper");
+require("xdeployer");
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -33,7 +34,7 @@ const {
 } = process.env;
 
 module.exports = {
-  defaultNetwork: "localhost",
+  defaultNetwork: "hardhat",
   networks: {
     hardhat: {
       forking: {
@@ -107,4 +108,14 @@ module.exports = {
       runs: 1000,
     },
   },
+  xdeploy: {
+    contract: "",
+    constructorArgsPath: "",
+    salt: "",
+    signer: PRIVATE_KEY,
+    networks: ["rinkeby", "ropsten"],
+    rpcUrls: [RINKEBY_URL, ROPSTEN_URL],
+  },
+
+  // view more Document: https://github.com/pcaversaccio/xdeployer
 };
