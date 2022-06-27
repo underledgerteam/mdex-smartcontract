@@ -179,6 +179,10 @@ contract MultiSigWallet {
             transaction.numConfirmations >= numConfirmationsRequired,
             "cannot execute tx"
         );
+          require(
+            callerTransaction.numConfirmations >= numConfirmationsRequired,
+            "cannot execute tx"
+        );
         require(IERC20(_stableCoin).balanceOf(address(this)) >= transaction.value, "erc20 insufficient balance");
 
         transaction.executed = true;
