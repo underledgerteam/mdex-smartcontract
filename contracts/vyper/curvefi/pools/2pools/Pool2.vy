@@ -73,8 +73,8 @@ N_COINS: constant(int128) = 2
 FEE_DENOMINATOR: constant(uint256) = 10 ** 10
 LENDING_PRECISION: constant(uint256) = 10 ** 18
 PRECISION: constant(uint256) = 10 ** 18  # The precision to convert to
-PRECISION_MUL: constant(uint256[N_COINS]) = [1000000000000, 1000000000000]
-RATES: constant(uint256[N_COINS]) = [1000000000000000000000000000000, 1000000000000000000000000000000]
+PRECISION_MUL: constant(uint256[N_COINS]) = [1, 1]
+RATES: constant(uint256[N_COINS]) = [1000000000000000000, 1000000000000000000]
 FEE_INDEX: constant(int128) = 2  # Which coin may potentially have fees (USDT)
 
 MAX_FEE: constant(uint256) = 5 * 10 ** 9
