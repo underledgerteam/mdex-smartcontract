@@ -47,10 +47,10 @@ describe("TEST BRIDGE TOKEN", () => {
     );
   });
   printSeperator();
-  console.log("Deploy connext Bridge Token ");
+  console.log("Deploy Connext Bridge Token ");
   printSeperator();
 
-  it("Use Case #1 : Should Bridge Token", async () => {
+  it("Test Case #1 : Should Bridge Token", async () => {
     await connextBridgeToken1.addStableCoin(CHAIN_1, MOCK_TOKEN);
 
     await connextBridgeToken1.addChainInfo(
@@ -77,7 +77,7 @@ describe("TEST BRIDGE TOKEN", () => {
       .withArgs(user1.address, 0);
   });
 
-  it("Use Case #2 : Shouldn't Bridge Token when Destination ChainID doesn't match", async () => {
+  it("Test Case #2 : Shouldn't Bridge Token when Destination ChainID doesn't match", async () => {
     await connextBridgeToken1.addStableCoin(CHAIN_1, user1.address);
 
     await connextBridgeToken1.addChainInfo(
@@ -103,7 +103,7 @@ describe("TEST BRIDGE TOKEN", () => {
     ).to.revertedWith("Bridge Destination Chain is not equal address 0");
   });
 
-  it("Use Case #3 : Should Receive on Destination Chain", async () => {
+  it("Test Case #3 : Should Receive on Destination Chain", async () => {
     await connextBridgeToken1.addStableCoin(CHAIN_1, MOCK_TOKEN);
 
     await connextBridgeToken1.addChainInfo(
@@ -136,7 +136,7 @@ describe("TEST BRIDGE TOKEN", () => {
       .withArgs(user1.address, 0);
   });
 
-  it("Use Case #4 : Shouldn't Receive on Destination Chain when paused", async () => {
+  it("Test Case #4 : Shouldn't Receive on Destination Chain when paused", async () => {
     await connextBridgeToken1.addStableCoin(CHAIN_1, MOCK_TOKEN);
 
     await connextBridgeToken1.addChainInfo(
