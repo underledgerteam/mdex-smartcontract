@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 contract MultiSigWallet {
 
+    enum StatusTransaction{WATING, READY, FAIL}
     address[] public teams;
     uint public numConfirmationsRequired;
     uint public transactionCount;
@@ -20,6 +21,8 @@ contract MultiSigWallet {
         uint numConfirmations;
         uint numNoConfirmations;
         uint timestamp;
+        uint totalVote;
+        StatusTransaction status;
     }
 
     mapping(address => bool) public isTeam;
@@ -45,6 +48,16 @@ contract MultiSigWallet {
 
     modifier ownerNotConfirmed(uint transactionId, address owner) {
         require(transactionById[transactionId].caller != owner, "owner cannot vote confirm");
+        _;
+    }
+
+    modifier isReady(uint transactionId) {
+        require(transactionById[transactionId].status == StatusTransaction.READY, "tx is not already to executed");
+        _;
+    }
+
+      modifier notVote(uint transactionId) {
+        require(transactionById[transactionId].totalVote < 3, "transaction is success for voting");
         _;
     }
 
@@ -84,9 +97,11 @@ contract MultiSigWallet {
             caller: msg.sender,
             value: value,
             executed: false,
-            numConfirmations: 0,
+            numConfirmations: 1,
             numNoConfirmations: 0,
-            timestamp: block.timestamp
+            timestamp: block.timestamp,
+            totalVote: 1,
+            status: StatusTransaction.WATING
         });
 
         myTransactionById[msg.sender][transactionCount] = Transaction({
@@ -95,9 +110,11 @@ contract MultiSigWallet {
             caller: msg.sender,
             value: value,
             executed: false,
-            numConfirmations: 0,
+            numConfirmations: 1,
             numNoConfirmations: 0,
-            timestamp: block.timestamp
+            timestamp: block.timestamp,
+            totalVote: 1,
+            status: StatusTransaction.WATING
         });
 
         emit WithdrawERC20(
@@ -118,6 +135,7 @@ contract MultiSigWallet {
         notExecuted(transactionId)
         notConfirmed(transactionId)
         ownerNotConfirmed(transactionId, msg.sender)
+        notVote(transactionId)
     {
         Transaction storage transaction = transactionById[transactionId];
         Transaction storage callerTransaction = myTransactionById[transaction.caller][transactionId];
@@ -128,8 +146,19 @@ contract MultiSigWallet {
         
         transaction.numConfirmations += 1;
         callerTransaction.numConfirmations +=  1;
+        transaction.totalVote += 1;
+        callerTransaction.totalVote +=  1;
 
         isConfirmed[transactionId][msg.sender] = true;
+
+        if(transaction.numConfirmations >= 2 && callerTransaction.numConfirmations >= 2){
+            transaction.status =  StatusTransaction.READY;
+            callerTransaction.status = StatusTransaction.READY;
+        }
+        if(transaction.numNoConfirmations >= 2 && callerTransaction.numNoConfirmations >= 2){
+            transaction.status =  StatusTransaction.FAIL;
+            callerTransaction.status = StatusTransaction.FAIL;
+        }
 
         emit ConfirmTransaction(msg.sender, transactionId);
 
@@ -141,6 +170,7 @@ contract MultiSigWallet {
         notExecuted(transactionId)
         notConfirmed(transactionId)
         ownerNotConfirmed(transactionId, msg.sender)
+        notVote(transactionId)
     {
         Transaction storage transaction = transactionById[transactionId];
         Transaction storage callerTransaction = myTransactionById[transaction.caller][transactionId];
@@ -151,6 +181,8 @@ contract MultiSigWallet {
         
         transaction.numNoConfirmations += 1;
         callerTransaction.numNoConfirmations +=  1;
+        transaction.totalVote += 1;
+        callerTransaction.totalVote +=  1;
 
         isConfirmed[transactionId][msg.sender] = true;
 
@@ -171,6 +203,7 @@ contract MultiSigWallet {
         public
         onlyTeam
         notExecuted(transactionId)
+        isReady(transactionId)
     {
         Transaction storage transaction = transactionById[transactionId];
         Transaction storage callerTransaction = myTransactionById[transaction.caller][transactionId];
