@@ -1,6 +1,5 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-// const { ethers: etherJS } = require("ethers");
 
 function printSeperator() {
   console.log("\n====================================\n");
@@ -78,30 +77,34 @@ describe("TEST POOL", () => {
       pool2
         .connect(user1)
         .add_liquidity(
-          ["10000000000000000000000", "10000000000000000000000"],
+          ["100", "100"],
           0
         )
     )
       .to.emit(curveToken, "Transfer")
-      .withArgs("0x0000000000000000000000000000000000000000", user1.address, 1);
+      .withArgs("0x0000000000000000000000000000000000000000", user1.address, 200);
   });
 
-  //   it("Use Case #2 : Should Swap", async () => {
-  //     await token1.mint(user1.address, "20000000000000000000000");
-  //     await token2.mint(user1.address, "10000000000000000000000");
-  //     await curveToken.connect(deployer).set_minter(pool2.address);
+  it("Use Case #2 : Should Swap", async () => {
+    await token1.mint(user1.address, "20000000000000000000000");
+    await token2.mint(user1.address, "10000000000000000000000");
+    await curveToken.connect(deployer).set_minter(pool2.address);
 
-  //     await token1
-  //       .connect(user1)
-  //       .approve(pool2.address, "20000000000000000000000");
-  //     await token2
-  //       .connect(user1)
-  //       .approve(pool2.address, "10000000000000000000000");
+    await token1
+      .connect(user1)
+      .approve(pool2.address, "20000000000000000000000");
+    await token2
+      .connect(user1)
+      .approve(pool2.address, "10000000000000000000000");
 
-  //     await pool2
-  //       .connect(user1)
-  //       .add_liquidity(["10000000000000000000000", "10000000000000000000000"], 0);
+    await pool2
+      .connect(user1)
+      .add_liquidity(["100", "100"], 0);
 
-  //     await pool2.connect(user1).exchange(2, 1, "100000", "100");
-  //   });
+    await expect(
+      pool2
+        .connect(user1)
+        .exchange(0, 1, "100000", "0"))
+      .to.emit(pool2, "TokenExchange");
+  });
 });
