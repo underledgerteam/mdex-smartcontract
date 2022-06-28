@@ -6,10 +6,11 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 contract MultiSigWallet {
 
-    enum StatusTransaction{WATING, READY, FAIL}
+    enum StatusTransaction{WATING, READY, QUEUE , FAIL, SUCCESS}
     address[] public teams;
     uint public numConfirmationsRequired;
     uint public transactionCount;
+    uint public delayTime;
     address public _stableCoin;
 
     struct Transaction {
@@ -21,14 +22,14 @@ contract MultiSigWallet {
         uint numConfirmations;
         uint numNoConfirmations;
         uint timestamp;
-        uint totalVote;
+        uint timeLock;
         StatusTransaction status;
+
     }
 
     mapping(address => bool) public isTeam;
     mapping(uint => mapping(address => bool)) public isConfirmed;
     mapping(uint => Transaction) public transactionById;
-    mapping(address => mapping(uint => Transaction)) public myTransactionById;
 
     modifier onlyTeam() {
         require(isTeam[msg.sender], "not team");
@@ -56,11 +57,15 @@ contract MultiSigWallet {
         _;
     }
 
-      modifier notVote(uint transactionId) {
-        require(transactionById[transactionId].totalVote < 3, "transaction is success for voting");
+    modifier isCancel(uint transactionId){
+        require(transactionById[transactionId].timeLock > block.timestamp, "tx is aleady approve");
         _;
     }
 
+    modifier noTimeLock(uint transactionId){
+        require(transactionById[transactionId].timeLock < block.timestamp, "tx is wating approve");
+        _; 
+    }
 
     event WithdrawETH ( address caller, address to, uint value);
     event WithdrawERC20 (address caller, address to, uint value);
@@ -82,7 +87,12 @@ contract MultiSigWallet {
         }
 
         numConfirmationsRequired = 3;
+        delayTime = 1;
 
+    }
+
+    function setNumberOfRequire(uint number) public onlyTeam{
+        numConfirmationsRequired = number;
     }
 
     function submitWithdrawTransaction(address to, uint value) public onlyTeam {
@@ -100,20 +110,7 @@ contract MultiSigWallet {
             numConfirmations: 1,
             numNoConfirmations: 0,
             timestamp: block.timestamp,
-            totalVote: 1,
-            status: StatusTransaction.WATING
-        });
-
-        myTransactionById[msg.sender][transactionCount] = Transaction({
-            id: transactionCount,
-            to: to,
-            caller: msg.sender,
-            value: value,
-            executed: false,
-            numConfirmations: 1,
-            numNoConfirmations: 0,
-            timestamp: block.timestamp,
-            totalVote: 1,
+            timeLock: 0,
             status: StatusTransaction.WATING
         });
 
@@ -125,8 +122,26 @@ contract MultiSigWallet {
 
     }
 
+    function _updateData(uint id) private {
+        Transaction storage transaction = transactionById[id];
+        if(transaction.status ==  StatusTransaction.QUEUE && transaction.timeLock >= block.timestamp) {
+            transaction.status = StatusTransaction.READY;
+        }
+    }
+
+    function uppdateData() public onlyTeam{
+        for(uint i = 1; i < transactionCount + 1; i++){
+            _updateData(i);
+        }
+    }
+
     function getBalance() public onlyTeam view returns(uint256) {
         return IERC20(_stableCoin).balanceOf(address(this));
+    }
+
+
+    function setDelay(uint delay) public onlyTeam {
+        delayTime = delay;
     }
 
     function confirmTransaction(uint transactionId)
@@ -135,56 +150,52 @@ contract MultiSigWallet {
         notExecuted(transactionId)
         notConfirmed(transactionId)
         ownerNotConfirmed(transactionId, msg.sender)
-        notVote(transactionId)
     {
         Transaction storage transaction = transactionById[transactionId];
-        Transaction storage callerTransaction = myTransactionById[transaction.caller][transactionId];
 
         require(transaction.id == transactionId, "tx does not exist");
-        require(callerTransaction.id == transactionId, "tx does not exist");
 
         
         transaction.numConfirmations += 1;
-        callerTransaction.numConfirmations +=  1;
-        transaction.totalVote += 1;
-        callerTransaction.totalVote +=  1;
 
         isConfirmed[transactionId][msg.sender] = true;
 
-        if(transaction.numConfirmations >= 2 && callerTransaction.numConfirmations >= 2){
-            transaction.status =  StatusTransaction.READY;
-            callerTransaction.status = StatusTransaction.READY;
-        }
-        if(transaction.numNoConfirmations >= 2 && callerTransaction.numNoConfirmations >= 2){
-            transaction.status =  StatusTransaction.FAIL;
-            callerTransaction.status = StatusTransaction.FAIL;
+        if(transaction.numConfirmations >= numConfirmationsRequired ){
+            transaction.status =  StatusTransaction.QUEUE;
+            transaction.timeLock = block.timestamp + delayTime;
+
         }
 
         emit ConfirmTransaction(msg.sender, transactionId);
 
     }
 
-        function noConfirmTransaction(uint transactionId)
+
+    function cancelTransaction(uint transactionId) public onlyTeam isCancel(transactionId) {
+        Transaction storage transaction = transactionById[transactionId];
+        require(transaction.id == transactionId, "tx does not exist");
+        transaction.status =  StatusTransaction.FAIL;
+    }
+    
+    function noConfirmTransaction(uint transactionId)
         public
         onlyTeam  
         notExecuted(transactionId)
         notConfirmed(transactionId)
         ownerNotConfirmed(transactionId, msg.sender)
-        notVote(transactionId)
     {
         Transaction storage transaction = transactionById[transactionId];
-        Transaction storage callerTransaction = myTransactionById[transaction.caller][transactionId];
 
         require(transaction.id == transactionId, "tx does not exist");
-        require(callerTransaction.id == transactionId, "tx does not exist");
 
         
         transaction.numNoConfirmations += 1;
-        callerTransaction.numNoConfirmations +=  1;
-        transaction.totalVote += 1;
-        callerTransaction.totalVote +=  1;
 
         isConfirmed[transactionId][msg.sender] = true;
+
+        if(transaction.numNoConfirmations >= numConfirmationsRequired){
+            transaction.status =  StatusTransaction.FAIL;
+        }
 
         emit ConfirmTransaction(msg.sender, transactionId);
 
@@ -198,28 +209,24 @@ contract MultiSigWallet {
         return transactions;
     }
 
-
     function executeTransaction(uint transactionId)
         public
         onlyTeam
         notExecuted(transactionId)
         isReady(transactionId)
+        noTimeLock(transactionId)
     {
         Transaction storage transaction = transactionById[transactionId];
-        Transaction storage callerTransaction = myTransactionById[transaction.caller][transactionId];
 
         require(
             transaction.numConfirmations >= numConfirmationsRequired,
             "cannot execute tx"
         );
-          require(
-            callerTransaction.numConfirmations >= numConfirmationsRequired,
-            "cannot execute tx"
-        );
+        
         require(IERC20(_stableCoin).balanceOf(address(this)) >= transaction.value, "erc20 insufficient balance");
 
         transaction.executed = true;
-        callerTransaction.executed = true;
+        transaction.status = StatusTransaction.SUCCESS;
 
         IERC20(_stableCoin).transfer(msg.sender, transaction.value);
 

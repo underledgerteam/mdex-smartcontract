@@ -68,6 +68,8 @@ describe("TEST MULTISIG WALLET", () => {
     await multiSigWallet.connect(user2).confirmTransaction(1);
     await multiSigWallet.connect(user3).confirmTransaction(1);
 
+    await multiSigWallet.connect(user1).uppdateData();
+
     await expect(multiSigWallet.connect(user1).executeTransaction(1))
       .to.emit(multiSigWallet, "ExecuteTransaction")
       .withArgs(user1.address, 1);
@@ -111,6 +113,8 @@ describe("TEST MULTISIG WALLET", () => {
 
     await multiSigWallet.connect(user3).confirmTransaction(1);
     await multiSigWallet.connect(user4).confirmTransaction(1);
+
+    await multiSigWallet.connect(user1).uppdateData();
 
     await multiSigWallet.connect(user1).executeTransaction(1);
 
@@ -170,6 +174,8 @@ describe("TEST MULTISIG WALLET", () => {
     await multiSigWallet.connect(user3).confirmTransaction(1);
     await multiSigWallet.connect(user4).confirmTransaction(1);
 
+    await multiSigWallet.connect(user1).uppdateData();
+
     await multiSigWallet.connect(user1).executeTransaction(1);
 
     await expect(
@@ -177,7 +183,7 @@ describe("TEST MULTISIG WALLET", () => {
     ).to.revertedWith("tx already executed");
   });
 
-  it("Test Case #12 : Shouldn't execute transaction if number of confirmation < 3", async () => {
+  it("Test Case #12 : Shouldn't execute transaction if transaction is state READY", async () => {
     await mockERC20.mint(multiSigWallet.address, "1000000000000000000");
 
     await multiSigWallet
@@ -186,12 +192,14 @@ describe("TEST MULTISIG WALLET", () => {
 
     await multiSigWallet.connect(user3).confirmTransaction(1);
 
+    await multiSigWallet.connect(user1).uppdateData();
+
     await expect(
       multiSigWallet.connect(user2).executeTransaction(1)
-    ).to.revertedWith("cannot execute tx");
+    ).to.revertedWith("tx is not already to executed");
   });
 
-  it("Test Case #13 : Shouldn't confirm transaction if total vot has 3", async () => {
+  it("Test Case #13 : Shouldn't execute transaction if transaction has time lock", async () => {
     await mockERC20.mint(multiSigWallet.address, "1000000000000000000");
 
     await multiSigWallet
@@ -201,23 +209,8 @@ describe("TEST MULTISIG WALLET", () => {
     await multiSigWallet.connect(user3).confirmTransaction(1);
     await multiSigWallet.connect(user4).confirmTransaction(1);
 
-    expect(multiSigWallet.connect(user5).confirmTransaction(1)).to.revertedWith(
-      "transaction is success for voting"
-    );
-  });
-
-  it("Test Case #14 : Shouldn't no confirm transaction if total vot has 3", async () => {
-    await mockERC20.mint(multiSigWallet.address, "1000000000000000000");
-
-    await multiSigWallet
-      .connect(user1)
-      .submitWithdrawTransaction(other.address, "1000000000000000000");
-
-    await multiSigWallet.connect(user3).noConfirmTransaction(1);
-    await multiSigWallet.connect(user4).noConfirmTransaction(1);
-
-    expect(
-      multiSigWallet.connect(user5).noConfirmTransaction(1)
-    ).to.revertedWith("transaction is success for voting");
+    await expect(
+      multiSigWallet.connect(user2).executeTransaction(1)
+    ).to.revertedWith("tx is not already to executed");
   });
 });
