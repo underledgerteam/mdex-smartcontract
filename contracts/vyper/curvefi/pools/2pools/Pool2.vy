@@ -236,9 +236,6 @@ def get_virtual_price() -> uint256:
 @external
 def calc_token_amount(amounts: uint256[N_COINS], deposit: bool) -> uint256:
     """
-    Simplified method to calculate addition or reduction in token supply at
-    deposit or withdrawal without taking fees into account (but looking at slippage).
-
     @notice Calculate addition or reduction in token supply from a deposit or withdrawal
     @dev Needed to prevent front-running, not for precise calculations
     @param amounts Amount of each coin being deposited
@@ -442,7 +439,7 @@ def get_dy_underlying(i: int128, j: int128, dx: uint256) -> uint256:
     @dev Index values can be found using Factory.get_underlying_coins()
     @param i Index value of the token to send
     @param j Index value of the token to receive
-    @param The amount of i being exchanged
+    @param dx The amount of i being exchanged
     @return The amount of j received
     """
     # dx and dy in underlying units
@@ -532,7 +529,7 @@ def remove_liquidity(_amount: uint256, min_amounts: uint256[N_COINS]):
     """
     @notice Withdraw coins from the pool
     @param _amount Quantity of LP tokens to burn in the withdrawal
-    @param _min_amounts List of minimum amounts of underlying coins to receive
+    @param min_amounts List of minimum amounts of underlying coins to receive
     """
     total_supply: uint256 = self.token.totalSupply()
     amounts: uint256[N_COINS] = empty(uint256[N_COINS])
@@ -724,7 +721,7 @@ def remove_liquidity_one_coin(_token_amount: uint256, i: int128, min_amount: uin
     """
     @notice Withdraw a single coin from the pool
     @dev Remove amount of liquidity all in a form of coin i
-    @param token_amount Amount of LP tokens to burn in the withdrawal
+    @param _token_amount Amount of LP tokens to burn in the withdrawal
     @param i Index value of the coin to withdraw
     @param min_amount Minimum amount of coin to receive
     """
