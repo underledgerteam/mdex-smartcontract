@@ -32,7 +32,7 @@ async function main() {
         coins,
         curveToken.address,
         400000,
-        10 * 10
+        1
     );
 
     await pool2.deployed();

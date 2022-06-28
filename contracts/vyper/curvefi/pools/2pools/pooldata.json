@@ -13,7 +13,7 @@
         },
         {
             "name": "BTK",
-            "decimals": 6,
+            "decimals": 18,
             "tethered": false,
             "underlying_address": "0x070bd4458dce567eb3c0aa964f07641d84e55c05"
         }
