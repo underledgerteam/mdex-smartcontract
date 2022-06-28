@@ -18,6 +18,7 @@ contract MultiSigWallet {
         uint value;
         bool executed;
         uint numConfirmations;
+        uint numNoConfirmations;
         uint timestamp;
     }
 
@@ -84,6 +85,7 @@ contract MultiSigWallet {
             value: value,
             executed: false,
             numConfirmations: 0,
+            numNoConfirmations: 0,
             timestamp: block.timestamp
         });
 
@@ -94,6 +96,7 @@ contract MultiSigWallet {
             value: value,
             executed: false,
             numConfirmations: 0,
+            numNoConfirmations: 0,
             timestamp: block.timestamp
         });
 
@@ -132,6 +135,29 @@ contract MultiSigWallet {
 
     }
 
+        function noConfirmTransaction(uint transactionId)
+        public
+        onlyTeam  
+        notExecuted(transactionId)
+        notConfirmed(transactionId)
+        ownerNotConfirmed(transactionId, msg.sender)
+    {
+        Transaction storage transaction = transactionById[transactionId];
+        Transaction storage callerTransaction = myTransactionById[transaction.caller][transactionId];
+
+        require(transaction.id == transactionId, "tx does not exist");
+        require(callerTransaction.id == transactionId, "tx does not exist");
+
+        
+        transaction.numNoConfirmations += 1;
+        callerTransaction.numNoConfirmations +=  1;
+
+        isConfirmed[transactionId][msg.sender] = true;
+
+        emit ConfirmTransaction(msg.sender, transactionId);
+
+    }
+
     function  getTransactions() public view returns(Transaction[] memory ) {
         Transaction[] memory transactions = new Transaction[](transactionCount);
         for(uint i = 0; i < transactionCount; i++){
@@ -151,6 +177,10 @@ contract MultiSigWallet {
 
         require(
             transaction.numConfirmations >= numConfirmationsRequired,
+            "cannot execute tx"
+        );
+          require(
+            callerTransaction.numConfirmations >= numConfirmationsRequired,
             "cannot execute tx"
         );
         require(IERC20(_stableCoin).balanceOf(address(this)) >= transaction.value, "erc20 insufficient balance");

@@ -8,3 +8,6 @@ package-lock.json
 #Hardhat files
 cache
 artifacts
+
+# create2
+deployments
