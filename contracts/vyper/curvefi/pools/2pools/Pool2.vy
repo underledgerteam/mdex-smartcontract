@@ -413,6 +413,49 @@ def get_y(i: int128, j: int128, x: uint256, xp_: uint256[N_COINS]) -> uint256:
     return y
 
 
+@view
+@external
+def get_dy(i: int128, j: int128, dx: uint256) -> uint256:
+    """
+    @notice Get the amount of coin j one would receive for swapping _dx of coin i
+    @param i Index value for the coin to send
+    @param j Index value of the coin to receive
+    @param dx Amount of i being exchanged
+    @return dy
+    """
+    # dx and dy in c-units
+    rates: uint256[N_COINS] = RATES
+    xp: uint256[N_COINS] = self._xp()
+
+    x: uint256 = xp[i] + (dx * rates[i] / PRECISION)
+    y: uint256 = self.get_y(i, j, x, xp)
+    dy: uint256 = (xp[j] - y - 1) * PRECISION / rates[j]
+    _fee: uint256 = self.fee * dy / FEE_DENOMINATOR
+    return dy - _fee
+
+
+@view
+@external
+def get_dy_underlying(i: int128, j: int128, dx: uint256) -> uint256:
+    """
+    @notice Get the amount received ("dy") when swapping between two underlying assets within the pool
+    @dev Index values can be found using Factory.get_underlying_coins()
+    @param i Index value of the token to send
+    @param j Index value of the token to receive
+    @param The amount of i being exchanged
+    @return The amount of j received
+    """
+    # dx and dy in underlying units
+    xp: uint256[N_COINS] = self._xp()
+    precisions: uint256[N_COINS] = PRECISION_MUL
+
+    x: uint256 = xp[i] + dx * precisions[i]
+    y: uint256 = self.get_y(i, j, x, xp)
+    dy: uint256 = (xp[j] - y - 1) / precisions[j]
+    _fee: uint256 = self.fee * dy / FEE_DENOMINATOR
+    return dy - _fee
+
+
 @external
 @nonreentrant('lock')
 def exchange(i: int128, j: int128, dx: uint256, min_dy: uint256):
