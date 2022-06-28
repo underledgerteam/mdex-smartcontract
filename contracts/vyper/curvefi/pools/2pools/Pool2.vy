@@ -158,6 +158,9 @@ def _A() -> uint256:
 @view
 @external
 def A() -> uint256:
+    """
+    @return The amplification coefficient for the pool 
+    """
     return self._A()
 
 
@@ -219,8 +222,8 @@ def get_D_mem(_balances: uint256[N_COINS], amp: uint256) -> uint256:
 @external
 def get_virtual_price() -> uint256:
     """
-    Returns portfolio virtual price (for calculating profit)
-    scaled up by 1e18
+    @notice The current price of the pool LP token relative to the underlying pool assets
+    @dev For calculating profit. Given as an integer with 1e18 precision
     """
     D: uint256 = self.get_D(self._xp(), self._A())
     # D is in the units similar to DAI (e.g. converted to precision 1e18)
@@ -234,9 +237,13 @@ def get_virtual_price() -> uint256:
 def calc_token_amount(amounts: uint256[N_COINS], deposit: bool) -> uint256:
     """
     Simplified method to calculate addition or reduction in token supply at
-    deposit or withdrawal without taking fees into account (but looking at
-    slippage).
-    Needed to prevent front-running, not for precise calculations!
+    deposit or withdrawal without taking fees into account (but looking at slippage).
+
+    @notice Calculate addition or reduction in token supply from a deposit or withdrawal
+    @dev Needed to prevent front-running, not for precise calculations
+    @param amounts Amount of each coin being deposited
+    @param deposit Set True for deposits, False for withdrawals
+    @return The expected amount of LP tokens received
     """
     _balances: uint256[N_COINS] = self.balances
     amp: uint256 = self._A()
@@ -262,6 +269,11 @@ def calc_token_amount(amounts: uint256[N_COINS], deposit: bool) -> uint256:
 @external
 @nonreentrant('lock')
 def add_liquidity(amounts: uint256[N_COINS], min_mint_amount: uint256):
+    """
+    @notice Deposit coins into the pool
+    @param amounts List of amounts of coins to deposit like [1000, 2000]
+    @param min_mint_amount Minimum amount of LP tokens to mint from the deposit
+    """
     assert not self.is_killed  # dev: is killed
 
     _n_coin: uint256 = convert(N_COINS, uint256)
@@ -404,6 +416,14 @@ def get_y(i: int128, j: int128, x: uint256, xp_: uint256[N_COINS]) -> uint256:
 @external
 @nonreentrant('lock')
 def exchange(i: int128, j: int128, dx: uint256, min_dy: uint256):
+    """
+    @notice Perform an exchange between two coins
+    @dev min_dy can found via get_dy()
+    @param i Index value for the coin to send
+    @param j Index value of the coin to receive
+    @param dx Amount of i being exchanged
+    @param min_dy Minimum amount of j to receive
+    """
     assert not self.is_killed  # dev: is killed
     rates: uint256[N_COINS] = RATES
 
@@ -466,6 +486,11 @@ def exchange(i: int128, j: int128, dx: uint256, min_dy: uint256):
 @external
 @nonreentrant('lock')
 def remove_liquidity(_amount: uint256, min_amounts: uint256[N_COINS]):
+    """
+    @notice Withdraw coins from the pool
+    @param _amount Quantity of LP tokens to burn in the withdrawal
+    @param _min_amounts List of minimum amounts of underlying coins to receive
+    """
     total_supply: uint256 = self.token.totalSupply()
     amounts: uint256[N_COINS] = empty(uint256[N_COINS])
     fees: uint256[N_COINS] = empty(uint256[N_COINS])  # Fees are unused but we've got them historically in event
@@ -497,6 +522,11 @@ def remove_liquidity(_amount: uint256, min_amounts: uint256[N_COINS]):
 @external
 @nonreentrant('lock')
 def remove_liquidity_imbalance(amounts: uint256[N_COINS], max_burn_amount: uint256):
+    """
+    @notice Withdraw coins from the pool in an imbalanced amount
+    @param amounts List of amounts of underlying coins to withdraw
+    @param max_burn_amount Maximum amount of LP token to burn in the withdrawal
+    """
     assert not self.is_killed  # dev: is killed
 
     token_supply: uint256 = self.token.totalSupply()
@@ -636,6 +666,12 @@ def _calc_withdraw_one_coin(_token_amount: uint256, i: int128) -> (uint256, uint
 @view
 @external
 def calc_withdraw_one_coin(_token_amount: uint256, i: int128) -> uint256:
+    """
+    @notice Calculate the amount received when withdrawing a single coin
+    @param _token_amount Amount of LP tokens to burn in the withdrawal
+    @param i Index value of the coin to withdraw
+    @return dy amount of coin would receive for swapping
+    """
     return self._calc_withdraw_one_coin(_token_amount, i)[0]
 
 
@@ -643,7 +679,11 @@ def calc_withdraw_one_coin(_token_amount: uint256, i: int128) -> uint256:
 @nonreentrant('lock')
 def remove_liquidity_one_coin(_token_amount: uint256, i: int128, min_amount: uint256):
     """
-    Remove _amount of liquidity all in a form of coin i
+    @notice Withdraw a single coin from the pool
+    @dev Remove amount of liquidity all in a form of coin i
+    @param token_amount Amount of LP tokens to burn in the withdrawal
+    @param i Index value of the coin to withdraw
+    @param min_amount Minimum amount of coin to receive
     """
     assert not self.is_killed  # dev: is killed
 
