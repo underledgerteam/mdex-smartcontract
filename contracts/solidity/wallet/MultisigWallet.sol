@@ -67,6 +67,11 @@ contract MultiSigWallet {
         _; 
     }
 
+     modifier isWating(uint transactionId){
+        require(transactionById[transactionId].status == StatusTransaction.WATING, "tx must be status wating");
+        _; 
+    }
+
     event WithdrawETH ( address caller, address to, uint value);
     event WithdrawERC20 (address caller, address to, uint value);
     event ConfirmTransaction(address indexed member, uint indexed transactionId);
@@ -150,6 +155,7 @@ contract MultiSigWallet {
         notExecuted(transactionId)
         notConfirmed(transactionId)
         ownerNotConfirmed(transactionId, msg.sender)
+        isWating(transactionId)
     {
         Transaction storage transaction = transactionById[transactionId];
 
@@ -183,6 +189,7 @@ contract MultiSigWallet {
         notExecuted(transactionId)
         notConfirmed(transactionId)
         ownerNotConfirmed(transactionId, msg.sender)
+        isWating(transactionId)
     {
         Transaction storage transaction = transactionById[transactionId];
 
