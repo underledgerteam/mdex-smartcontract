@@ -455,7 +455,7 @@ def get_dy_underlying(i: int128, j: int128, dx: uint256) -> uint256:
 
 @external
 @nonreentrant('lock')
-def exchange(i: int128, j: int128, dx: uint256, min_dy: uint256):
+def exchange(i: int128, j: int128, dx: uint256, min_dy: uint256, receiver: address):
     """
     @notice Perform an exchange between two coins
     @dev min_dy can found via get_dy()
@@ -512,7 +512,7 @@ def exchange(i: int128, j: int128, dx: uint256, min_dy: uint256):
         self.coins[j],
         concat(
             method_id("transfer(address,uint256)"),
-            convert(msg.sender, bytes32),
+            convert(receiver, bytes32),
             convert(dy, bytes32),
         ),
         max_outsize=32,
@@ -520,7 +520,7 @@ def exchange(i: int128, j: int128, dx: uint256, min_dy: uint256):
     if len(_response) > 0:
         assert convert(_response, bool)  # dev: failed transfer
 
-    log TokenExchange(msg.sender, i, dx, j, dy)
+    log TokenExchange(receiver, i, dx, j, dy)
 
 
 @external
