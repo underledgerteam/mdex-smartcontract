@@ -11,7 +11,9 @@
     "deploy:goerli": "npx hardhat run --network goerli",
     "test": "hardhat test --network hardhat",
     "test-net": "hardhat test --network rinkeby",
-    "test-all": "hardhat test --network hardhat test/*.js"
+    "test-all": "hardhat test --network hardhat test/*.js",
+    "lint": "solhint --max-warnings 0 \"contracts/**/*.sol\"",
+    "coverage": "hardhat coverage"
   },
   "author": "",
   "license": "ISC",

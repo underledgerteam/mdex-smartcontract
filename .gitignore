@@ -11,3 +11,7 @@ artifacts
 
 # create2
 deployments
+
+# testing
+/coverage
+coverage.json

@@ -34,7 +34,7 @@ const {
 } = process.env;
 
 module.exports = {
-  defaultNetwork: "hardhat",
+  defaultNetwork: "localhost",
   networks: {
     hardhat: {},
     ropsten: {
@@ -105,7 +105,7 @@ module.exports = {
   settings: {
     optimizer: {
       enabled: true,
-      runs: 1000,
+      runs: 10000,
     },
   },
   xdeploy: {
