@@ -104,7 +104,7 @@ describe("TEST POOL", () => {
     await expect(
       pool2
         .connect(user1)
-        .exchange(0, 1, "100000", "0"))
+        .exchange(0, 1, "100000", "0", user1.address))
       .to.emit(pool2, "TokenExchange");
   });
 });
