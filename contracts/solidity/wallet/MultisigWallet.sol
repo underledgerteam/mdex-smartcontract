@@ -18,13 +18,11 @@ contract MultiSigWallet {
         address to;
         address caller;
         uint value;
-        bool executed;
         uint numConfirmations;
         uint numNoConfirmations;
         uint timestamp;
         uint timeLock;
         StatusTransaction status;
-
     }
 
     mapping(address => bool) public isTeam;
@@ -33,12 +31,6 @@ contract MultiSigWallet {
 
     modifier onlyTeam() {
         require(isTeam[msg.sender], "not team");
-        _;
-    }
-
-
-    modifier notExecuted(uint transactionId) {
-        require(!transactionById[transactionId].executed, "tx already executed");
         _;
     }
 
@@ -67,8 +59,14 @@ contract MultiSigWallet {
         _; 
     }
 
-     modifier isWating(uint transactionId){
+    modifier isWating(uint transactionId){
         require(transactionById[transactionId].status == StatusTransaction.WATING, "tx must be status wating");
+        _; 
+    }
+
+
+    modifier isOwnerTransaction(uint transactionId, address owner){
+        require(transactionById[transactionId].caller == owner, "only owner transaction call execute");
         _; 
     }
 
@@ -111,7 +109,6 @@ contract MultiSigWallet {
             to: to,
             caller: msg.sender,
             value: value,
-            executed: false,
             numConfirmations: 1,
             numNoConfirmations: 0,
             timestamp: block.timestamp,
@@ -152,7 +149,6 @@ contract MultiSigWallet {
     function confirmTransaction(uint transactionId)
         public
         onlyTeam  
-        notExecuted(transactionId)
         notConfirmed(transactionId)
         ownerNotConfirmed(transactionId, msg.sender)
         isWating(transactionId)
@@ -186,7 +182,6 @@ contract MultiSigWallet {
     function noConfirmTransaction(uint transactionId)
         public
         onlyTeam  
-        notExecuted(transactionId)
         notConfirmed(transactionId)
         ownerNotConfirmed(transactionId, msg.sender)
         isWating(transactionId)
@@ -219,9 +214,9 @@ contract MultiSigWallet {
     function executeTransaction(uint transactionId)
         public
         onlyTeam
-        notExecuted(transactionId)
         isReady(transactionId)
         noTimeLock(transactionId)
+        isOwnerTransaction(transactionId, msg.sender)
     {
         Transaction storage transaction = transactionById[transactionId];
 
@@ -232,7 +227,6 @@ contract MultiSigWallet {
         
         require(IERC20(_stableCoin).balanceOf(address(this)) >= transaction.value, "erc20 insufficient balance");
 
-        transaction.executed = true;
         transaction.status = StatusTransaction.SUCCESS;
 
         IERC20(_stableCoin).transfer(msg.sender, transaction.value);

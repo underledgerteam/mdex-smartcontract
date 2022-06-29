@@ -34,7 +34,7 @@ const {
 } = process.env;
 
 module.exports = {
-  defaultNetwork: "hardhat",
+  defaultNetwork: "localhost",
   networks: {
     hardhat: {},
     ropsten: {

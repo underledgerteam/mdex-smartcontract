@@ -120,7 +120,7 @@ describe("TEST MULTISIG WALLET", () => {
 
     await expect(
       multiSigWallet.connect(user2).confirmTransaction(1)
-    ).to.revertedWith("tx already executed");
+    ).to.revertedWith("tx must be status wating");
   });
 
   it("Test Case #8 : Shouldn't confirm transaction if confirmed", async () => {
@@ -180,7 +180,7 @@ describe("TEST MULTISIG WALLET", () => {
 
     await expect(
       multiSigWallet.connect(user2).executeTransaction(1)
-    ).to.revertedWith("tx already executed");
+    ).to.revertedWith("tx is not already to executed");
   });
 
   it("Test Case #12 : Shouldn't execute transaction if transaction is state READY", async () => {
@@ -227,5 +227,22 @@ describe("TEST MULTISIG WALLET", () => {
     await expect(
       multiSigWallet.connect(user5).confirmTransaction(1)
     ).to.revertedWith("tx must be status wating");
+  });
+
+  it("Test Case #15 : Shouldn't execute transaction if not owner", async () => {
+    await mockERC20.mint(multiSigWallet.address, "1000000000000000000");
+
+    await multiSigWallet
+      .connect(user1)
+      .submitWithdrawTransaction(other.address, "1000000000000000000");
+
+    await multiSigWallet.connect(user3).confirmTransaction(1);
+    await multiSigWallet.connect(user4).confirmTransaction(1);
+
+    await multiSigWallet.connect(user1).uppdateData();
+
+    await expect(
+      multiSigWallet.connect(user5).executeTransaction(1)
+    ).to.revertedWith("only owner transaction call execute");
   });
 });
