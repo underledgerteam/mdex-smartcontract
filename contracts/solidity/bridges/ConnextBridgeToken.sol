@@ -14,7 +14,7 @@ contract ConnextBridgeToken is  Ownable, Pausable {
         uint128 chainId;
         string chainName;
         uint32 chainDomainId;
-        address bridgeAddress;
+        address bridgeAddresss;
     }
 
     mapping(uint128 => address) public controllerAddress;
