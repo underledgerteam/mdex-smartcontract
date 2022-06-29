@@ -17,6 +17,6 @@ jobs:
       - name: Azure Pipelines Action
         uses: Azure/pipelines@v1
         with:
-          azure-devops-project-url: https://dev.azure.com/parametprame2/mdex
-          azure-pipeline-name: "underledgerteam.mdex-smartcontract"
+          azure-devops-project-url: https://dev.azure.com/parametprame20157/mdex-project
+          azure-pipeline-name: "test-pipeline"
           azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
