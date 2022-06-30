@@ -413,14 +413,6 @@ def get_y(i: int128, j: int128, x: uint256, xp_: uint256[N_COINS]) -> uint256:
 @view
 @external
 def get_dy(i: int128, j: int128, dx: uint256) -> uint256:
-    """
-    @notice Get the amount of coin j one would receive for swapping _dx of coin i
-    @param i Index value for the coin to send
-    @param j Index value of the coin to receive
-    @param dx Amount of i being exchanged
-    @return dy
-    """
-    # dx and dy in c-units
     rates: uint256[N_COINS] = RATES
     xp: uint256[N_COINS] = self._xp()
 
