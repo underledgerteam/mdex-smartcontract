@@ -15,15 +15,23 @@ describe("TEST POOL", () => {
   let token2;
   let pool2;
   let user1;
+  let totalSupply;
+  let decimal;
   beforeEach(async () => {
     [deployer, user1] = await ethers.getSigners();
+
+    decimal = 18
+    totalSupply = "10000000000000000000000"
+    rateInfo = "0xFFFFFFFFFFFFFFFF000000000000000000000000000000000000000000000000"
 
     const MockERC20 = await ethers.getContractFactory("MockERC20");
     token1 = await MockERC20.deploy();
     token2 = await MockERC20.deploy();
+    token3 = await MockERC20.deploy();
 
     await token1.deployed();
     await token2.deployed();
+    await token3.deployed();
 
     const AddressProvider = await ethers.getContractFactory("AddressProvider");
 
@@ -34,26 +42,27 @@ describe("TEST POOL", () => {
     registry = await Registry.deploy(provider.address);
     await registry.deployed();
 
-    const PoolInfo = await ethers.getContractFactory("PoolInfo");
+    const PoolInfo = await ethers.getContractFactory("MdexCurveFiPool");
     poolInfo = await PoolInfo.deploy(provider.address);
     await poolInfo.deployed();
 
-    await provider.add_new_id(registry.address, "PoolInfo Getters");
-    await provider.add_new_id(poolInfo.address, "PoolInfo Getters");
+    await provider.set_address(0, registry.address);
+    await provider.add_new_id(poolInfo.address, "MdexCurveFiPool Getters");
 
     const CurveToken = await ethers.getContractFactory("CurveToken");
     curveToken = await CurveToken.deploy("MTOKEN", "MTK");
     await curveToken.deployed();
 
-    const Pool2 = await ethers.getContractFactory("Pool2");
-    pool2 = await Pool2.deploy(
-      deployer.address,
-      [token1.address, token2.address],
-      curveToken.address,
-      400000,
-      1
+    const Pool = await ethers.getContractFactory("Pool2");
+    pool1 = await Pool.deploy(
+      deployer.address, [token1.address, token2.address],
+      curveToken.address, 400000, 1);
+    pool2 = await Pool.deploy(
+      deployer.address, [token1.address, token3.address],
+      curveToken.address, 400000, 1
     );
 
+    await pool1.deployed();
     await pool2.deployed();
   });
 
@@ -62,49 +71,124 @@ describe("TEST POOL", () => {
   printSeperator();
 
   it("Use Case #1 : Should Add Liquidity", async () => {
-    await token1.mint(user1.address, "10000000000000000000000");
-    await token2.mint(user1.address, "10000000000000000000000");
-    await curveToken.connect(deployer).set_minter(pool2.address);
+    liquidity1 = 10000
+    liquidity2 = 20000
 
-    await token1
-      .connect(user1)
-      .approve(pool2.address, "10000000000000000000000");
-    await token2
-      .connect(user1)
-      .approve(pool2.address, "10000000000000000000000");
+    await token1.mint(user1.address, totalSupply);
+    await token2.mint(user1.address, totalSupply);
+    await curveToken.connect(deployer).set_minter(pool1.address);
+
+    await token1.connect(user1).approve(pool1.address, totalSupply);
+    await token2.connect(user1).approve(pool1.address, totalSupply);
 
     await expect(
-      pool2
+      pool1
         .connect(user1)
-        .add_liquidity(
-          ["100", "100"],
-          0
-        )
-    )
-      .to.emit(curveToken, "Transfer")
-      .withArgs("0x0000000000000000000000000000000000000000", user1.address, 200);
+        .add_liquidity([liquidity1, liquidity2], 0)
+    ).to.emit(curveToken, "Transfer")
+      .withArgs(
+        "0x0000000000000000000000000000000000000000",
+        user1.address,
+        (liquidity1 + liquidity2) - 1
+      );
   });
 
-  it("Use Case #2 : Should Swap", async () => {
-    await token1.mint(user1.address, "20000000000000000000000");
-    await token2.mint(user1.address, "10000000000000000000000");
-    await curveToken.connect(deployer).set_minter(pool2.address);
+  it("Use Case #2 : Should Add Pool", async () => {
+    n_coin = 2
+    poolName = "Pool2AB"
 
-    await token1
-      .connect(user1)
-      .approve(pool2.address, "20000000000000000000000");
-    await token2
-      .connect(user1)
-      .approve(pool2.address, "10000000000000000000000");
+    poolCountBefore = await poolInfo.get_pool_count()
 
-    await pool2
-      .connect(user1)
-      .add_liquidity(["100", "100"], 0);
+    await registry.add_pool_without_underlying(
+      pool1.address, n_coin, curveToken.address, rateInfo,
+      decimal, decimal, false, false, poolName
+    );
+
+    poolCountAfter = await poolInfo.get_pool_count()
+    poolRegistered = await registry.pool_list(0)
+
+    expect(poolCountBefore, 0)
+    expect(poolCountAfter, 1)
+    expect(poolRegistered, pool1.address)
+  });
+
+  it("User Case #3 : Should Get Pool By Address", async () => {
+    n_coin = 2
+    poolName = "Pool2AB"
+
+    await registry.add_pool_without_underlying(
+      pool1.address, n_coin, curveToken.address, rateInfo,
+      decimal, decimal, false, false, poolName
+    );
+
+    data = await poolInfo.get_pool_by_address(pool1.address)
+    count = await poolInfo.get_pool_count()
+
+    expect(count, 1)
+    expect(data.name, poolName)
+    expect(data.lp_token, curveToken.address)
+    expect(data.coins.length, 2)
+  });
+
+  it("User Case #4 : Should Get Pool List", async () => {
+    // Pool 1
+    await registry.add_pool_without_underlying(
+      pool1.address, 2, curveToken.address, rateInfo,
+      decimal, decimal, false, false, "Pool2AB"
+    );
+
+    // Pool 2
+    await registry.add_pool_without_underlying(
+      pool2.address, 2, curveToken.address, rateInfo,
+      decimal, decimal, false, false, "Pool2AC"
+    );
+
+    poolList = []
+    count = await poolInfo.get_pool_count()
+
+    for(i = 0; i <count; i++) {
+      poolAddress = await registry.pool_list(i)
+      poolData = await poolInfo.get_pool_by_address(poolAddress)
+      poolList.push(poolData)
+    }
+
+    expect(poolList.length, 2)
+    expect(poolList[0].address, pool1.address)
+    expect(poolList[1].address, pool2.address)
+  });
+
+  it("Use Case #6 : Should Get Pool Coins", async () => {
+    await registry.add_pool_without_underlying(
+      pool1.address, 2, curveToken.address, rateInfo,
+      decimal, decimal, false, false, "Pool2AB"
+    );
+
+    poolCoins = await poolInfo.get_pool_coins(pool1.address)
+    
+    expect(poolCoins.length, 2)
+    expect(poolCoins, [token1.address, token2.address])
+  });
+
+  it("Use Case #5 : Should Swap", async () => {
+    liquidity1 = 10000
+    liquidity2 = 20000
+    swapAmount = 10
+
+    await token1.mint(user1.address, totalSupply);
+    await token2.mint(user1.address, totalSupply);
+    await curveToken.connect(deployer).set_minter(pool1.address);
+
+    await token1.connect(user1).approve(pool1.address, totalSupply);
+    await token2.connect(user1).approve(pool1.address, totalSupply);
+
+    await pool1.connect(user1).add_liquidity([liquidity1, liquidity1], 0);
+
+    min_dy = await pool1.connect(user1).get_dy(0, 1, swapAmount);
 
     await expect(
-      pool2
+      pool1
         .connect(user1)
-        .exchange(0, 1, "100000", "0", user1.address))
-      .to.emit(pool2, "TokenExchange");
+        .exchange(0, 1, 10, min_dy, user1.address))
+      .to.emit(pool1, "TokenExchange");
   });
 });
