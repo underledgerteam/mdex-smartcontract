@@ -322,7 +322,7 @@ def _get_coin_indices(
 
 @view
 @external
-def find_pool_for_coins(_from: address, _to: address, i: uint256 = 0) -> address:
+def find_pool_for_coins(_from: address, _to: address, i: uint256) -> address:
     """
     @notice Find an available pool for exchanging two coins
     @param _from Address of coin to be sent
@@ -649,11 +649,6 @@ def _add_pool(
     _is_v1: bool,
     _name: String[64],
 ):
-    assert _sender == self.address_provider.admin()  # dev: admin-only function
-    assert _lp_token != ZERO_ADDRESS
-    assert self.pool_data[_pool].coins[0] == ZERO_ADDRESS  # dev: pool exists
-    assert self.get_pool_from_lp_token[_lp_token] == ZERO_ADDRESS
-
     # add pool to pool_list
     length: uint256 = self.pool_count
     self.pool_list[length] = _pool
@@ -753,27 +748,16 @@ def _unregister_coin_pair(_coina: address, _coinb: address, _coinb_idx: uint256)
 @internal
 def _get_new_pool_coins(
     _pool: address,
-    _n_coins: uint256,
-    _is_underlying: bool,
-    _is_v1: bool
+    _n_coins: uint256
 ) -> address[MAX_COINS]:
     coin_list: address[MAX_COINS] = empty(address[MAX_COINS])
     coin: address = ZERO_ADDRESS
     for i in range(MAX_COINS):
         if convert(i, uint256) == _n_coins:
             break
-        if _is_underlying:
-            if _is_v1:
-                coin = CurvePoolV1(_pool).underlying_coins(i)
-            else:
-                coin = CurvePool(_pool).underlying_coins(convert(i, uint256))
-            self.pool_data[_pool].ul_coins[i] = coin
-        else:
-            if _is_v1:
-                coin = CurvePoolV1(_pool).coins(i)
-            else:
-                coin = CurvePool(_pool).coins(convert(i, uint256))
-            self.pool_data[_pool].coins[i] = coin
+
+        coin = CurvePool(_pool).coins(convert(i, uint256))
+        self.pool_data[_pool].coins[i] = coin
         coin_list[i] = coin
 
     for i in range(MAX_COINS):
@@ -883,13 +867,13 @@ def add_pool(
         _name,
     )
 
-    coins: address[MAX_COINS] = self._get_new_pool_coins(_pool, _n_coins, False, _is_v1)
+    coins: address[MAX_COINS] = self._get_new_pool_coins(_pool, _n_coins)
     decimals: uint256 = _decimals
     if decimals == 0:
         decimals = self._get_new_pool_decimals(coins, _n_coins)
     self.pool_data[_pool].decimals = decimals
 
-    coins = self._get_new_pool_coins(_pool, _n_coins, True, _is_v1)
+    coins = self._get_new_pool_coins(_pool, _n_coins)
     decimals = _underlying_decimals
     if decimals == 0:
         decimals = self._get_new_pool_decimals(coins, _n_coins)
@@ -932,7 +916,7 @@ def add_pool_without_underlying(
         _name,
     )
 
-    coins: address[MAX_COINS] = self._get_new_pool_coins(_pool, _n_coins, False, _is_v1)
+    coins: address[MAX_COINS] = self._get_new_pool_coins(_pool, _n_coins)
 
     decimals: uint256 = _decimals
     if decimals == 0:
@@ -989,7 +973,7 @@ def add_metapool(
         _name,
     )
 
-    coins: address[MAX_COINS] = self._get_new_pool_coins(_pool, _n_coins, False, False)
+    coins: address[MAX_COINS] = self._get_new_pool_coins(_pool, _n_coins)
 
     decimals: uint256 = _decimals
     if decimals == 0:

@@ -845,3 +845,9 @@ def unkill_me():
 @external
 def get_coins() -> address[N_COINS]:
     return self.coins
+
+
+@view
+@external
+def underlying_coins(i: uint256) -> address:
+    return self.coins[i]
