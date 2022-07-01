@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9]
+        python-version: [3.9]
         node-version: [14.x]
 
     steps:
@@ -19,8 +19,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install
-      - run: yarn compile
+      - run: npm install
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
