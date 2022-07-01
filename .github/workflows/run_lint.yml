@@ -1,11 +1,7 @@
-name: run-tests
-on:
-  pull_request:
-    paths:
-      - "contracts/**"
-      - "test/**"
+name: run-lint
+on: [pull_request]:
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,6 +12,7 @@ jobs:
         with:
           node-version: 14.16.0
       - name: Installing dependencies
-        run: npm install --frozen-lockfile
+        run: npm install
       - name: Running tests
-        run: npm test
+        run: npm run lint
+
