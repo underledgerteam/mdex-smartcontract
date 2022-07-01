@@ -8,8 +8,15 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: npm run lint
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.16.0
+        - name: Running tests
+          run: npm run lint
 
   test:
     runs-on: ubuntu-latest
