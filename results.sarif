@@ -1,1 +1,26 @@
-{}
+ {
+    "path": [
+      "runs",
+      0,
+      "invocations",
+      0,
+      "toolExecutionNotifications",
+      48,
+      "locations",
+      0,
+      "physicalLocation",
+      "artifactLocation",
+      "uri"
+    ],
+    "property": "instance.runs[0].invocations[0].toolExecutionNotifications[48].locations[0].physicalLocation.artifactLocation.uri",
+    "message": "does not conform to the \"uri-reference\" format",
+    "schema": {
+      "description": "A string containing a valid relative or absolute URI.",
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "instance": "src/core/hoсs/CustomRoute.ts",
+    "name": "format",
+    "argument": "uri-reference",
+    "stack": "instance.runs[0].invocations[0].toolExecutionNotifications[48].locations[0].physicalLocation.artifactLocation.uri does not conform to the \"uri-reference\" format"
+  }
