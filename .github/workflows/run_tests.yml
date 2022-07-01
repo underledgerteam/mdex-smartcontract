@@ -5,8 +5,14 @@ on:
       - "contracts/**"
       - "test/**"
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm run lint
+
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -17,7 +23,5 @@ jobs:
           node-version: 14.16.0
       - name: Installing dependencies
         run: npm install --frozen-lockfile
-      - name: Running lint
-        run: npm run lint
       - name: Running tests
         run: npm test
