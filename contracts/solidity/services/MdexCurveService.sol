@@ -17,8 +17,8 @@ contract MdexCurveService is IMdexService {
         address pool;
         IERC20(token1).transferFrom(address(controller), address(this), amount);
         (pool)  = curveRegistry.find_pool_for_coins(token1, token2, 0);
-        IERC20(token1).approve(pool, amount);
         (min_dy) = ICurveSwap(pool).get_dy(0, 1, amount);
+        IERC20(token1).approve(pool, amount);
         ICurveSwap(pool).exchange(0, 1, amount, min_dy, reciever);
        
     }

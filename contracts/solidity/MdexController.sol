@@ -25,7 +25,7 @@ contract MdexController is Ownable {
         (netAmount) = _serviceFee(amount);
         IERC20(tokenIn).approve(service, amount);
         IMdexService(service).swap(tokenIn, tokenOut, netAmount, msg.sender);
-        IMdexService(service).swap(tokenIn, tokenOut, amount - netAmount, multisigWallet);
+        IMdexService(service).swap(tokenIn, stableCoin, amount - netAmount, multisigWallet);
     }
 
     function setStableCoin(address token) public onlyOwner {

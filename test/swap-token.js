@@ -11,8 +11,10 @@ describe("TEST SWAP TOKEN", () => {
   let registry;
   let poolInfo;
   let curveToken;
+  let curveToken2;
   let token1;
   let token2;
+  let pool1;
   let pool2;
   let user1;
   let mdexController;
@@ -21,6 +23,7 @@ describe("TEST SWAP TOKEN", () => {
   let user3;
   let user4;
   let user5;
+  let stableCoin;
   let rateInfo =
     "0xFFFFFFFFFFFFFFFF000000000000000000000000000000000000000000000000";
   beforeEach(async () => {
@@ -31,9 +34,11 @@ describe("TEST SWAP TOKEN", () => {
     const MockERC20 = await ethers.getContractFactory("MockERC20");
     token1 = await MockERC20.deploy();
     token2 = await MockERC20.deploy();
+    stableCoin = await MockERC20.deploy();
 
     await token1.deployed();
     await token2.deployed();
+    await stableCoin.deployed();
 
     const AddressProvider = await ethers.getContractFactory("AddressProvider");
     provider = await AddressProvider.deploy(deployer.address);
@@ -54,8 +59,11 @@ describe("TEST SWAP TOKEN", () => {
     curveToken = await CurveToken.deploy("MTOKEN", "MTK");
     await curveToken.deployed();
 
+    curveToken2 = await CurveToken.deploy("MTOKEN2", "MTK2");
+    await curveToken2.deployed();
+
     const Pool2 = await ethers.getContractFactory("Pool2");
-    pool2 = await Pool2.deploy(
+    pool1 = await Pool2.deploy(
       deployer.address,
       [token1.address, token2.address],
       curveToken.address,
@@ -63,19 +71,41 @@ describe("TEST SWAP TOKEN", () => {
       1
     );
 
+    pool2 = await Pool2.deploy(
+      deployer.address,
+      [token1.address, stableCoin.address],
+      curveToken2.address,
+      400000,
+      1
+    );
+
+    await pool1.deployed();
     await pool2.deployed();
 
-    await token1.mint(user1.address, "20000000000000000000000");
+    await token1.mint(user1.address, "30000000000000000000000");
     await token2.mint(user1.address, "10000000000000000000000");
+    await stableCoin.mint(user1.address, "10000000000000000000000");
 
-    await curveToken.connect(deployer).set_minter(pool2.address);
+    await curveToken.connect(deployer).set_minter(pool1.address);
+    await curveToken2.connect(deployer).set_minter(pool2.address);
 
     await token1
       .connect(user1)
-      .approve(pool2.address, "10000000000000000000000");
+      .approve(pool1.address, "10000000000000000000000");
     await token2
       .connect(user1)
-      .approve(pool2.address, "10000000000000000000000");
+      .approve(pool1.address, "10000000000000000000000");
+
+    await token1
+      .connect(user1)
+      .approve(pool2.address, "20000000000000000000000");
+    await stableCoin
+      .connect(user1)
+      .approve(pool2.address, "20000000000000000000000");
+
+    await pool1
+      .connect(user1)
+      .add_liquidity(["10000000000000000000000", "10000000000000000000000"], 0);
 
     await pool2
       .connect(user1)
@@ -84,7 +114,7 @@ describe("TEST SWAP TOKEN", () => {
     await registry
       .connect(user1)
       .add_pool_without_underlying(
-        pool2.address,
+        pool1.address,
         n_coin,
         curveToken.address,
         rateInfo,
@@ -93,6 +123,20 @@ describe("TEST SWAP TOKEN", () => {
         false,
         false,
         poolName
+      );
+
+    await registry
+      .connect(user1)
+      .add_pool_without_underlying(
+        pool2.address,
+        n_coin,
+        curveToken2.address,
+        rateInfo,
+        18,
+        18,
+        false,
+        false,
+        "PoolStable"
       );
 
     const MultiSigWallet = await ethers.getContractFactory("MultiSigWallet");
@@ -104,7 +148,7 @@ describe("TEST SWAP TOKEN", () => {
         user4.address,
         user5.address,
       ],
-      token2.address
+      stableCoin.address
     );
 
     await multiSigWallet.deployed();
@@ -124,6 +168,8 @@ describe("TEST SWAP TOKEN", () => {
     );
 
     await mdexCurveService.deployed();
+
+    await mdexController.setStableCoin(stableCoin.address);
   });
 
   it("Use Case #1 : Should Swap Token", async () => {
@@ -142,7 +188,7 @@ describe("TEST SWAP TOKEN", () => {
 
     await expect(await token1.balanceOf(user1.address)).to.equal("0");
     await expect(await token2.balanceOf(user1.address)).to.gt("0");
-    await expect(await token2.balanceOf(multiSigWallet.address)).to.gt("0");
+    await expect(await stableCoin.balanceOf(multiSigWallet.address)).to.gt("0");
   });
 
   it("Use Case #2 : Shouldn't call service if not controller", async () => {
