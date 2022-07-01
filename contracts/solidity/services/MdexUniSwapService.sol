@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "../interfaces/IMdexService.sol";
 
 
-contract MdexCurveService is IMdexService {
+contract MdexUniSwapService is IMdexService {
 
      constructor( address _controller) IMdexService(_controller){}
 
