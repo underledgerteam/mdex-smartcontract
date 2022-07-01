@@ -1,4 +1,4 @@
-name: TEST
+name: Slither Analysis
 
 on:
   pull_request:
@@ -10,13 +10,21 @@ jobs:
     permissions:
       contents: read
       security-events: write
+      actions: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Run TEST
+      - name: Run Slither
         uses: crytic/slither-action@v0.1.1
         continue-on-error: true
         id: slither
         with:
           node-version: 16
+          ignore-compile: true
+          sarif: results.sarif
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ steps.slither.outputs.sarif }}
