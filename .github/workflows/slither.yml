@@ -14,6 +14,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Set up environment
+        uses: ./.github/actions/setup
+
       - name: Run Slither
         uses: crytic/slither-action@v0.1.1
         continue-on-error: true
