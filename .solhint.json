@@ -6,8 +6,13 @@
     "const-name-snakecase": ["warn"],
     "event-name-camelcase": ["warn"],
     "contract-name-camelcase": ["warn"],
-    "func-name-mixedcase": ["warn"],
+    "func-name-mixedcase": ["off"],
     "imports-on-top": ["warn"],
-    "reentrancy": ["error"]
+    "reentrancy": ["error"],
+    "var-name-mixedcase": ["off"],
+    "func-visibility": ["warn", { "ignoreConstructors": true }],
+    "not-rely-on-time": ["off"],
+    "avoid-low-level-calls": ["off"],
+    "reason-string": ["off"]
   }
 }
