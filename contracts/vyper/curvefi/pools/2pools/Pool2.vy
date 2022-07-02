@@ -413,14 +413,6 @@ def get_y(i: int128, j: int128, x: uint256, xp_: uint256[N_COINS]) -> uint256:
 @view
 @external
 def get_dy(i: int128, j: int128, dx: uint256) -> uint256:
-    """
-    @notice Get the amount of coin j one would receive for swapping _dx of coin i
-    @param i Index value for the coin to send
-    @param j Index value of the coin to receive
-    @param dx Amount of i being exchanged
-    @return dy
-    """
-    # dx and dy in c-units
     rates: uint256[N_COINS] = RATES
     xp: uint256[N_COINS] = self._xp()
 
@@ -455,7 +447,7 @@ def get_dy_underlying(i: int128, j: int128, dx: uint256) -> uint256:
 
 @external
 @nonreentrant('lock')
-def exchange(i: int128, j: int128, dx: uint256, min_dy: uint256):
+def exchange(i: int128, j: int128, dx: uint256, min_dy: uint256, receiver: address):
     """
     @notice Perform an exchange between two coins
     @dev min_dy can found via get_dy()
@@ -512,7 +504,7 @@ def exchange(i: int128, j: int128, dx: uint256, min_dy: uint256):
         self.coins[j],
         concat(
             method_id("transfer(address,uint256)"),
-            convert(msg.sender, bytes32),
+            convert(receiver, bytes32),
             convert(dy, bytes32),
         ),
         max_outsize=32,
@@ -520,7 +512,7 @@ def exchange(i: int128, j: int128, dx: uint256, min_dy: uint256):
     if len(_response) > 0:
         assert convert(_response, bool)  # dev: failed transfer
 
-    log TokenExchange(msg.sender, i, dx, j, dy)
+    log TokenExchange(receiver, i, dx, j, dy)
 
 
 @external
@@ -845,3 +837,9 @@ def unkill_me():
 @external
 def get_coins() -> address[N_COINS]:
     return self.coins
+
+
+@view
+@external
+def underlying_coins(i: uint256) -> address:
+    return self.coins[i]
