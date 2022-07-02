@@ -12,7 +12,7 @@
     "test": "hardhat test --network hardhat",
     "test-net": "hardhat test --network rinkeby",
     "test-all": "hardhat test --network hardhat test/*.js",
-    "lint": "solhint --max-warnings 0 \"contracts/**/*.sol\"",
+    "lint": "solhint --max-warnings 20 \"contracts/**/*.sol\"",
     "coverage": "hardhat coverage"
   },
   "author": "",
