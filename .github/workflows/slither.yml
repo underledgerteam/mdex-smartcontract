@@ -17,8 +17,7 @@ jobs:
 
       - name: Run Slither
         uses: crytic/slither-action@v0.1.1
-        continue-on-error: true
+        continue-on-error: false
         id: slither
         with:
           node-version: 16
-          ignore-compile: true
