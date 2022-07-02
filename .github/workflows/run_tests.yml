@@ -2,8 +2,8 @@ name: run-tests
 on:
   pull_request:
     paths:
-      - "contracts/**"
-      - "test/**"
+      - 'contracts/**'
+      - 'test/**'
 jobs:
   test:
     runs-on: ubuntu-latest
