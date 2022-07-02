@@ -13,6 +13,7 @@
     "test-net": "hardhat test --network rinkeby",
     "test-all": "hardhat test --network hardhat test/*.js",
     "lint": "solhint --max-warnings 20 \"contracts/**/*.sol\"",
+    "slither": "npx hardhat clean && slither . --detect reentrancy-eth,reentrancy-no-eth,reentrancy-unlimited-gas",
     "coverage": "hardhat coverage"
   },
   "author": "",
