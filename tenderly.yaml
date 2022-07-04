@@ -1,0 +1,16 @@
+account_id: fdd176e9-85da-4c90-8f06-3ddbbcf49707
+actions:
+  parametprame/mdex-finance:
+    runtime: v1
+    sources: actions
+    specs:
+      updateTransaction:
+        description: update status on multi-sig wallet
+        function: multisig-action:updateStateFn
+        trigger:
+          type: block
+          block:
+            network: 4
+            blocks: 3
+project_slug: mdex-finance
+provider: Hardhat
