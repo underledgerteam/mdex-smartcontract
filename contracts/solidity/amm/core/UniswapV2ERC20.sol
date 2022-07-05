@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity =0.6.12;
+pragma solidity ^0.8.0;
 
-import '../libraries/SafeMath.sol';
+import "../libraries/SafeMath.sol";
 
 contract UniswapV2ERC20 {
     using SafeMathUniswap for uint;
 
-    string public constant name = 'SushiSwap LP Token';
-    string public constant symbol = 'SLP';
+    string public constant name = "SushiSwap LP Token";
+    string public constant symbol = "SLP";
     uint8 public constant decimals = 18;
     uint  public totalSupply;
     mapping(address => uint) public balanceOf;
@@ -29,9 +29,9 @@ contract UniswapV2ERC20 {
         }
         DOMAIN_SEPARATOR = keccak256(
             abi.encode(
-                keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)'),
+                keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
                 keccak256(bytes(name)),
-                keccak256(bytes('1')),
+                keccak256(bytes("1")),
                 chainId,
                 address(this)
             )
@@ -72,7 +72,7 @@ contract UniswapV2ERC20 {
     }
 
     function transferFrom(address from, address to, uint value) external returns (bool) {
-        if (allowance[from][msg.sender] != uint(-1)) {
+        if (allowance[from][msg.sender] != type(uint).max) {
             allowance[from][msg.sender] = allowance[from][msg.sender].sub(value);
         }
         _transfer(from, to, value);
@@ -80,16 +80,16 @@ contract UniswapV2ERC20 {
     }
 
     function permit(address owner, address spender, uint value, uint deadline, uint8 v, bytes32 r, bytes32 s) external {
-        require(deadline >= block.timestamp, 'UniswapV2: EXPIRED');
+        require(deadline >= block.timestamp, "UniswapV2: EXPIRED");
         bytes32 digest = keccak256(
             abi.encodePacked(
-                '\x19\x01',
+                "\x19\x01",
                 DOMAIN_SEPARATOR,
                 keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, nonces[owner]++, deadline))
             )
         );
         address recoveredAddress = ecrecover(digest, v, r, s);
-        require(recoveredAddress != address(0) && recoveredAddress == owner, 'UniswapV2: INVALID_SIGNATURE');
+        require(recoveredAddress != address(0) && recoveredAddress == owner, "UniswapV2: INVALID_SIGNATURE");
         _approve(owner, spender, value);
     }
 }
