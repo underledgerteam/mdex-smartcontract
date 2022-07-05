@@ -46,7 +46,9 @@ const rinkebyPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
 module.exports = {
   defaultNetwork: "localhost",
   networks: {
-    hardhat: {},
+    hardhat: {
+      allowUnlimitedContractSize: true
+    },
     ropsten: {
       url: ropstenEndpoint,
       accounts: [ropstenPrivateKey],
@@ -110,6 +112,9 @@ module.exports = {
       {
         version: "0.6.11",
       },
+      {
+        version: "0.6.12"
+      }
     ],
   },
   settings: {
