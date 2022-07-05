@@ -18,12 +18,10 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
-// You need to export an object to set up your config
-// Go to https://hardhat.org/config/ to learn more
+const DEFAULT_ENDPOINT = "http://localhost:8545";
+const DEFAULT_PRIVATE_KEY =
+  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
-/**
- * @type import('hardhat/config').HardhatUserConfig
- */
 const {
   PRIVATE_KEY,
   RINKEBY_URL,
@@ -33,6 +31,18 @@ const {
   ETHERSCAN_API_KEY,
 } = process.env;
 
+const kovanEndpoint = KOVAN_URL || DEFAULT_ENDPOINT;
+const kovanPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
+
+const ropstenEndpoint = ROPSTEN_URL || DEFAULT_ENDPOINT;
+const ropstenPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
+
+const goerliEndpoint = GOERLI_URL || DEFAULT_ENDPOINT;
+const goerliPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
+
+const rinkebyEndpoint = RINKEBY_URL || DEFAULT_ENDPOINT;
+const rinkebyPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
+
 module.exports = {
   defaultNetwork: "localhost",
   networks: {
@@ -40,23 +50,23 @@ module.exports = {
       allowUnlimitedContractSize: true
     },
     ropsten: {
-      url: `${ROPSTEN_URL}`,
-      accounts: [PRIVATE_KEY],
+      url: ropstenEndpoint,
+      accounts: [ropstenPrivateKey],
       chainId: 3,
     },
     rinkeby: {
-      url: `${RINKEBY_URL}`,
-      accounts: [PRIVATE_KEY],
+      url: rinkebyEndpoint,
+      accounts: [rinkebyPrivateKey],
       chainId: 4,
     },
     kovan: {
-      url: `${KOVAN_URL}`,
-      accounts: [PRIVATE_KEY],
+      url: kovanEndpoint,
+      accounts: [kovanPrivateKey],
       chainId: 42,
     },
     goerli: {
-      url: `${GOERLI_URL}`,
-      accounts: [PRIVATE_KEY],
+      url: goerliEndpoint,
+      accounts: [goerliPrivateKey],
       chainId: 5,
     },
   },
