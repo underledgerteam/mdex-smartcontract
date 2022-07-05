@@ -36,7 +36,9 @@ const {
 module.exports = {
   defaultNetwork: "localhost",
   networks: {
-    hardhat: {},
+    hardhat: {
+      allowUnlimitedContractSize: true
+    },
     ropsten: {
       url: `${ROPSTEN_URL}`,
       accounts: [PRIVATE_KEY],
@@ -100,6 +102,9 @@ module.exports = {
       {
         version: "0.6.11",
       },
+      {
+        version: "0.6.12"
+      }
     ],
   },
   settings: {
