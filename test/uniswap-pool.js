@@ -155,7 +155,7 @@ describe("TEST UNISWAP POOL", () => {
     reserveAfter = await pair.getReserves();
         
     expect(await tokenA.balanceOf(user2.address)).to.equal("9000");
-    expect(reserveAfter[0]).to.equal("101000");
+    expect(await tokenB.balanceOf(user2.address)).to.not.equal("0");
   });
 
   it("User Case #6 : Should Swap B to A", async () => {
@@ -199,7 +199,7 @@ describe("TEST UNISWAP POOL", () => {
 
     reserveAfter = await pair.getReserves();
         
+    expect(await tokenA.balanceOf(user2.address)).to.not.equal("0");
     expect(await tokenB.balanceOf(user2.address)).to.equal("9000");
-    expect(reserveAfter[0]).to.equal("101000");
   });
 });
