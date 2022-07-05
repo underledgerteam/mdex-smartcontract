@@ -7,7 +7,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "hardhat/console.sol";
 import "./interfaces/IMdexService.sol";
-contract MdexController is Ownable {
+import "@openzeppelin/contracts/security/Pausable.sol";
+contract MdexController is Ownable, Pausable {
 
     using SafeMath for uint256;
 
@@ -18,7 +19,7 @@ contract MdexController is Ownable {
     constructor(address _multisigWallet){
         multisigWallet = _multisigWallet;
     }
-    function swap(address tokenIn, address tokenOut, uint256 amount, address service) external {
+    function swap(address tokenIn, address tokenOut, uint256 amount, address service) external whenNotPaused {
         uint256 netAmount;
         require(IERC20(tokenIn).balanceOf(msg.sender) >= amount, "not enough erc20 balance");
         IERC20(tokenIn).transferFrom(msg.sender, address(this), amount);
@@ -28,6 +29,13 @@ contract MdexController is Ownable {
         IMdexService(service).swap(tokenIn, stableCoin, amount - netAmount, multisigWallet);
     }
 
+
+    function setPause() public onlyOwner {
+        _pause();
+    }
+    function setUnPause() public onlyOwner{
+        _unpause();
+    }
     function setStableCoin(address token) public onlyOwner {
         stableCoin = token;
     }
