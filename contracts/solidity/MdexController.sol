@@ -16,17 +16,28 @@ contract MdexController is Ownable, Pausable {
     address private multisigWallet;
     uint256 private fee = 1;
 
+    struct service{
+        address service;
+        uint amount;
+    }
+
     constructor(address _multisigWallet){
         multisigWallet = _multisigWallet;
     }
-    function swap(address tokenIn, address tokenOut, uint256 amount, address service) external whenNotPaused {
+    function swap(address tokenIn, address tokenOut, uint256 amount, service[] memory services) external whenNotPaused {
         uint256 netAmount;
         require(IERC20(tokenIn).balanceOf(msg.sender) >= amount, "not enough erc20 balance");
+        require(services.length > 0, "service not empty");
         IERC20(tokenIn).transferFrom(msg.sender, address(this), amount);
         (netAmount) = _serviceFee(amount);
-        IERC20(tokenIn).approve(service, amount);
-        IMdexService(service).swap(tokenIn, tokenOut, netAmount, msg.sender);
-        IMdexService(service).swap(tokenIn, stableCoin, amount - netAmount, multisigWallet);
+
+        for(uint i = 0; i < services.length; i++) {
+            IERC20(tokenIn).approve(services[i].service, services[i].amount);
+            IMdexService(services[i].service).swap(tokenIn, tokenOut, services[i].amount, msg.sender);
+        }
+
+        IERC20(tokenIn).approve(services[0].service, amount - netAmount);
+        IMdexService(services[0].service).swap(tokenIn, stableCoin, amount - netAmount, multisigWallet);
     }
 
 

@@ -179,12 +179,10 @@ describe('TEST SWAP TOKEN CURVE', () => {
 
     await mdexController
       .connect(user1)
-      .swap(
-        token1.address,
-        token2.address,
-        '10000000000000000000000',
-        mdexCurveService.address,
-      );
+      .swap(token1.address, token2.address, '10000000000000000000000', [
+        [mdexCurveService.address, 500],
+        [mdexCurveService.address, 1500],
+      ]);
 
     await expect(await token1.balanceOf(user1.address)).to.equal('0');
     await expect(await token2.balanceOf(user1.address)).to.gt('0');
@@ -218,12 +216,10 @@ describe('TEST SWAP TOKEN CURVE', () => {
     await expect(
       mdexController
         .connect(user1)
-        .swap(
-          token1.address,
-          token2.address,
-          '10000000000000000000000',
-          mdexCurveService.address,
-        ),
+        .swap(token1.address, token2.address, '10000000000000000000000', [
+          [mdexCurveService.address, 500],
+          [mdexCurveService.address, 1500],
+        ]),
     ).to.revertedWith('Pausable: paused');
   });
 });

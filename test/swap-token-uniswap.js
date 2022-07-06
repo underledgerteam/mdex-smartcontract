@@ -133,12 +133,10 @@ describe('TEST SWAP TOKEN UNISWAP', () => {
 
     await mdexController
       .connect(user1)
-      .swap(
-        tokenA.address,
-        tokenB.address,
-        '100000000000000000000000',
-        mdexUniSwapService.address,
-      );
+      .swap(tokenA.address, tokenB.address, '100000000000000000000000', [
+        [mdexUniSwapService.address, 500],
+        [mdexUniSwapService.address, 1500],
+      ]);
 
     await expect(await tokenA.balanceOf(user1.address)).to.equal(
       '100000000000000000000000',
@@ -173,12 +171,10 @@ describe('TEST SWAP TOKEN UNISWAP', () => {
     await expect(
       mdexController
         .connect(user1)
-        .swap(
-          tokenA.address,
-          tokenB.address,
-          '10000000000000000000000',
-          mdexUniSwapService.address,
-        ),
+        .swap(tokenA.address, tokenB.address, '10000000000000000000000', [
+          [mdexUniSwapService.address, 500],
+          [mdexUniSwapService.address, 1500],
+        ]),
     ).to.revertedWith('Pausable: paused');
   });
 });
