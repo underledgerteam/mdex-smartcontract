@@ -226,10 +226,11 @@ def get_virtual_price() -> uint256:
     @dev For calculating profit. Given as an integer with 1e18 precision
     """
     D: uint256 = self.get_D(self._xp(), self._A())
+    return D
     # D is in the units similar to DAI (e.g. converted to precision 1e18)
     # When balanced, D = n * x_u - total virtual value of the portfolio
-    token_supply: uint256 = self.token.totalSupply()
-    return D * PRECISION / token_supply
+    # token_supply: uint256 = self.token.totalSupply()
+    # return D * PRECISION / token_supply
 
 
 @view

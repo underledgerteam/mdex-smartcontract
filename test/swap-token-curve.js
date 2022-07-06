@@ -62,8 +62,8 @@ describe('TEST SWAP TOKEN CURVE', () => {
     curveToken2 = await CurveToken.deploy('MTOKEN2', 'MTK2');
     await curveToken2.deployed();
 
-    const Pool2 = await ethers.getContractFactory('Pool2');
-    pool1 = await Pool2.deploy(
+    const Pool2Assets = await ethers.getContractFactory('Pool2Assets');
+    pool1 = await Pool2Assets.deploy(
       deployer.address,
       [token1.address, token2.address],
       curveToken.address,
@@ -71,7 +71,7 @@ describe('TEST SWAP TOKEN CURVE', () => {
       1,
     );
 
-    pool2 = await Pool2.deploy(
+    pool2 = await Pool2Assets.deploy(
       deployer.address,
       [token1.address, stableCoin.address],
       curveToken2.address,

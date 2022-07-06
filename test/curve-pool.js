@@ -5,7 +5,7 @@ function printSeperator() {
   console.log("\n====================================\n");
 }
 
-describe("TEST POOL", () => {
+describe("TEST CURVE POOL", () => {
   let deployer;
   let provider;
   let registry;
@@ -53,7 +53,7 @@ describe("TEST POOL", () => {
     curveToken = await CurveToken.deploy("MTOKEN", "MTK");
     await curveToken.deployed();
 
-    const Pool = await ethers.getContractFactory("Pool2");
+    const Pool = await ethers.getContractFactory("Pool2Assets");
     pool1 = await Pool.deploy(
       deployer.address, [token1.address, token2.address],
       curveToken.address, 400000, 1);
@@ -157,7 +157,7 @@ describe("TEST POOL", () => {
     expect(poolList[1].address, pool2.address)
   });
 
-  it("Use Case #6 : Should Get Pool Coins", async () => {
+  it("Use Case #5 : Should Get Pool Coins", async () => {
     await registry.add_pool_without_underlying(
       pool1.address, 2, curveToken.address, rateInfo,
       decimal, decimal, false, false, "Pool2AB"
@@ -169,7 +169,7 @@ describe("TEST POOL", () => {
     expect(poolCoins, [token1.address, token2.address])
   });
 
-  it("Use Case #5 : Should Swap", async () => {
+  it("Use Case #6 : Should Swap", async () => {
     liquidity1 = 10000
     liquidity2 = 20000
     swapAmount = 10
@@ -191,4 +191,21 @@ describe("TEST POOL", () => {
         .exchange(0, 1, 10, min_dy, user1.address))
       .to.emit(pool1, "TokenExchange");
   });
+
+  it("Use Case #7 : Get Virtual Price", async () => {
+    liquidity1 = 10000
+    liquidity2 = 20000
+
+    await token1.mint(user1.address, totalSupply);
+    await token2.mint(user1.address, totalSupply);
+    await curveToken.connect(deployer).set_minter(pool1.address);
+
+    await token1.connect(user1).approve(pool1.address, totalSupply);
+    await token2.connect(user1).approve(pool1.address, totalSupply);
+
+    await pool1.connect(user1).add_liquidity([liquidity1, liquidity2], 0);
+
+    await expect(pool1.connect(user1).get_virtual_price()).to.not.equal(0);
+  });
+
 });
