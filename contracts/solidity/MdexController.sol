@@ -27,6 +27,7 @@ contract MdexController is Ownable, Pausable {
     function swap(address tokenIn, address tokenOut, uint256 amount, service[] memory services) external whenNotPaused {
         uint256 netAmount;
         require(IERC20(tokenIn).balanceOf(msg.sender) >= amount, "not enough erc20 balance");
+        require(services.length > 0, "service not empty");
         IERC20(tokenIn).transferFrom(msg.sender, address(this), amount);
         (netAmount) = _serviceFee(amount);
 
