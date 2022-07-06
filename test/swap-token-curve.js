@@ -5,7 +5,7 @@ function printSeperator() {
   console.log('\n====================================\n');
 }
 
-describe('TEST SWAP TOKEN', () => {
+describe('TEST SWAP TOKEN CURVE', () => {
   let deployer;
   let provider;
   let registry;
