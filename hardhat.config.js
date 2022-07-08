@@ -53,6 +53,7 @@ module.exports = {
       url: ropstenEndpoint,
       accounts: [ropstenPrivateKey],
       chainId: 3,
+      allowUnlimitedContractSize: true
     },
     rinkeby: {
       url: rinkebyEndpoint,
