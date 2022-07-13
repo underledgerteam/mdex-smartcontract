@@ -208,4 +208,35 @@ describe("TEST CURVE POOL", () => {
     await expect(pool1.connect(user1).get_virtual_price()).to.not.equal(0);
   });
 
+  it("Use Case #8 : Find pool by coins", async () => {
+
+    let n_coin = 2
+    let poolName = "Pool2AB"
+
+    let token1Address;
+    let token2Address;
+
+    await registry.add_pool_without_underlying(
+      pool1.address, n_coin, curveToken.address, rateInfo,
+      decimal, decimal, false, false, poolName
+    );
+
+    let count = await poolInfo.get_pool_count()
+
+    for(i = 0; i <count; i++) {
+      poolAddress = await registry.pool_list(i);
+      poolData = await poolInfo.get_pool_by_address(poolAddress);
+
+      poolCoins = poolData.coins;
+
+      if (poolCoins.includes(token1.address) && poolCoins.includes(token2.address)) {
+        token1Address = poolCoins[0];
+        token2Address = poolCoins[1];
+      }
+    }
+
+    expect(token1.address, token1Address);
+    expect(token2.address, token2Address);
+  });
+
 });
