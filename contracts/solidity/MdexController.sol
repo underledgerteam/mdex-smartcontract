@@ -14,7 +14,7 @@ contract MdexController is Ownable, Pausable {
 
     address private stableCoin;
     address private multisigWallet;
-    uint256 private fee = 1;
+    uint256 public fee = 1;
 
     struct service{
         address service;
@@ -25,11 +25,11 @@ contract MdexController is Ownable, Pausable {
         multisigWallet = _multisigWallet;
     }
     function swap(address tokenIn, address tokenOut, uint256 amount, service[] memory services) external whenNotPaused {
-        uint256 netAmount;
+        
         require(IERC20(tokenIn).balanceOf(msg.sender) >= amount, "not enough erc20 balance");
         require(services.length > 0, "service not empty");
         IERC20(tokenIn).transferFrom(msg.sender, address(this), amount);
-        (netAmount) = _serviceFee(amount);
+        uint256 netAmount = _serviceFee(amount);
 
         for(uint i = 0; i < services.length; i++) {
             IERC20(tokenIn).approve(services[i].service, services[i].amount);
@@ -37,7 +37,7 @@ contract MdexController is Ownable, Pausable {
         }
 
         IERC20(tokenIn).approve(services[0].service, amount - netAmount);
-        IMdexService(services[0].service).swap(tokenIn, stableCoin, amount - netAmount, multisigWallet);
+        IMdexService(services[0].service).swap(tokenIn, stableCoin, netAmount, multisigWallet);
     }
 
 
@@ -54,10 +54,9 @@ contract MdexController is Ownable, Pausable {
         fee = newFee;
     }
 
-    function _serviceFee(uint256 amount) private view returns(uint256){
+    function _serviceFee(uint256 amount) public view returns(uint256){
         uint256 totalFee = amount.mul(fee).div(100);
         return totalFee;
     }
-
-
 }
+// npx hardhat verify --network rinkeby 0x621df621f5790184646dd4f14b8088de458c129d "0x99c0Ca1094b09B4f8ea4A6dc3Bd2F5B26639B642"

@@ -46,4 +46,12 @@ Contract Addres for using in our project
 
 | Name | Chain | Address |
 | --- | --- | --- |
-| `Bridge Controller` | Ethereum Rinkeby Testnet | **0x00000000000000000**|
+| `Mdex Controller` | Ethereum Rinkeby Testnet | **0x621Df621F5790184646Dd4f14b8088de458C129d**|
+| `Latte Token` | Ethereum Rinkeby Testnet | **0xe842709994fd15889C77749806F7D4C0e9775D41**|
+| `Mocha Token` | Ethereum Rinkeby Testnet | **0x985623ec22501b59954B5Fe6557C8Fe518B00B67**|
+| `Test Token` | Ethereum Rinkeby Testnet | **0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9**|
+| `Uniswap Router` | Ethereum Rinkeby Testnet | **0x1E35e4F59aF5eAD9100b0152129836A5E1d73e37**|
+| `Uniswap Factory` | Ethereum Rinkeby Testnet | **0xC5d1087c591D61ce9e386f12729562F961E39CB1**|
+| `Uniswap Service` | Ethereum Rinkeby Testnet | **0x65495Dbc9bB9dbfcD78C1d3BEA6E168fa22DB591**|
+| `Multisig Wallet` | Ethereum Rinkeby Testnet | **0x99c0Ca1094b09B4f8ea4A6dc3Bd2F5B26639B642**|
+
