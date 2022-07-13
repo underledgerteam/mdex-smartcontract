@@ -33,7 +33,7 @@ async function main() {
     await token1.approve(router.address, maxUint);
 
     // Add liquidity
-    const amount = 100000;
+    const amount = 10000000000000000000000;
     await router.addLiquidity(
         token0Address,
         token1Address,
