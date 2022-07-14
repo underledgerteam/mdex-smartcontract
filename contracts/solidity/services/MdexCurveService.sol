@@ -12,19 +12,49 @@ contract MdexCurveService is IMdexService {
     constructor( address _controller, ICurveRegistry _curve) IMdexService(_controller){
         curveRegistry = _curve;
     }
-    function curveSwap(address token1, address token2, uint256 amount, address reciever) internal {
+    function curveSwap(address tokenIn, address tokenOut, uint256 amount, address reciever) internal {
         uint256 min_dy;
         address pool;
-        IERC20(token1).transferFrom(address(controller), address(this), amount);
-        (pool)  = curveRegistry.find_pool_for_coins(token1, token2, 0);
-        (min_dy) = ICurveSwap(pool).get_dy(0, 1, amount);
-        IERC20(token1).approve(pool, amount);
-        ICurveSwap(pool).exchange(0, 1, amount, min_dy, reciever);
+        int128 i;
+        int128 j;
+        IERC20(tokenIn).transferFrom(address(controller), address(this), amount);
+        (pool)  = curveRegistry.find_pool_for_coins(tokenIn, tokenOut, 0);
+        (i, j) = _findIndexToken(tokenIn, tokenOut);
+        (min_dy) = ICurveSwap(pool).get_dy(i, j, amount);
+        IERC20(tokenIn).approve(pool, amount);
+        ICurveSwap(pool).exchange(i, j, amount, min_dy, reciever);
        
     }
-    function _swap(address token1, address token2, uint256 amount, address reciever) internal override {
+    function _swap(address tokenIn, address tokenOut, uint256 amount, address reciever) internal override {
         require(msg.sender == address(controller), "Only Controller Call");
-        curveSwap(token1, token2, amount, reciever);
+        curveSwap(tokenIn, tokenOut, amount, reciever);
+    }
+    function _getDestinationReturnAmount(address tokenIn, address tokenOut, uint256 amount) internal override view returns(uint256 token2Amount){
+        address pool;
+        uint256 min_dy;
+        (pool)  = curveRegistry.find_pool_for_coins(tokenIn, tokenOut, 0);
+        (min_dy) = ICurveSwap(pool).get_dy_underlying(0, 1, amount);
+        return min_dy;
+    }
+
+    function _findIndexToken(address tokenIn, address tokenOut) private view returns(int128 indexI, int128 indexJ){
+        address pool = curveRegistry.find_pool_for_coins(tokenIn, tokenOut, 0);
+        address[2] memory coins = curveRegistry.get_coins(pool);
+
+        require(tokenIn != tokenOut, "Destination token can not be source token");
+
+        indexI = -1;
+        indexJ = -1;    
+
+        indexI = tokenIn == coins[0] ? int128(0) : indexI;
+        indexI = tokenIn == coins[1] ? int128(1) : indexI;
+
+        indexJ = tokenOut == coins[0] ? int128(0) : indexJ;
+        indexJ = tokenOut == coins[1] ? int128(1) : indexJ;
+
+        require(indexI != -1 && indexJ != -1, "Tokens're not supported!");
+
+        return (indexI, indexJ);
     }
 
 }
