@@ -170,26 +170,47 @@ describe('TEST SWAP TOKEN CURVE', () => {
     await mdexCurveService.deployed();
 
     await mdexController.setStableCoin(stableCoin.address);
+
+    await mdexController.addTradingRoute(
+      'CurveSwapService',
+      mdexCurveService.address,
+    );
   });
 
   it('Use Case #1 : Should Swap Token', async () => {
     await token1
       .connect(user1)
-      .approve(mdexController.address, '10000000000000000000000');
+      .approve(mdexController.address, '100000000000000000000000');
 
     await mdexController
       .connect(user1)
-      .swap(token1.address, token2.address, '10000000000000000000000', [
-        [mdexCurveService.address, 500],
-        [mdexCurveService.address, 1500],
-      ]);
+      .swap(token1.address, token2.address, '10000000000000000000000', 0);
 
     await expect(await token1.balanceOf(user1.address)).to.equal('0');
     await expect(await token2.balanceOf(user1.address)).to.gt('0');
     await expect(await stableCoin.balanceOf(multiSigWallet.address)).to.gt('0');
   });
 
-  it("Use Case #2 : Shouldn't call service if not controller", async () => {
+  it('Use Case #2 : Should Spilt Swap Token', async () => {
+    await token1
+      .connect(user1)
+      .approve(mdexController.address, '100000000000000000000000');
+
+    await mdexController
+      .connect(user1)
+      .spiltSwap(
+        token1.address,
+        token2.address,
+        '10000000000000000000000',
+        [0, 0],
+        ['4000000000000000000000', '4000000000000000000000'],
+      );
+
+    await expect(await token1.balanceOf(user1.address)).to.equal('0');
+    await expect(await token2.balanceOf(user1.address)).to.gt('0');
+    await expect(await stableCoin.balanceOf(multiSigWallet.address)).to.gt('0');
+  });
+  it("Use Case #3 : Shouldn't call service if not controller", async () => {
     await token1
       .connect(user1)
       .approve(mdexController.address, '10000000000000000000000');
@@ -206,7 +227,7 @@ describe('TEST SWAP TOKEN CURVE', () => {
     ).to.revertedWith('Not Controller');
   });
 
-  it("Use Case #3 : Shouldn't swap token when contract is pausing", async () => {
+  it("Use Case #4 : Shouldn't swap token when contract is pausing", async () => {
     await mdexController.setPause();
 
     await token1
@@ -216,10 +237,21 @@ describe('TEST SWAP TOKEN CURVE', () => {
     await expect(
       mdexController
         .connect(user1)
-        .swap(token1.address, token2.address, '10000000000000000000000', [
-          [mdexCurveService.address, 500],
-          [mdexCurveService.address, 1500],
-        ]),
+        .swap(token1.address, token2.address, '10000000000000000000000', 0),
     ).to.revertedWith('Pausable: paused');
+  });
+
+  it("Use Case #5 : Shouldn't swap token when router is disabled", async () => {
+    await mdexController.disableTradingRoute(0);
+
+    await token1
+      .connect(user1)
+      .approve(mdexController.address, '10000000000000000000000');
+
+    await expect(
+      mdexController
+        .connect(user1)
+        .swap(token1.address, token2.address, '10000000000000000000000', 0),
+    ).to.revertedWith('This trading route is disabled');
   });
 });
