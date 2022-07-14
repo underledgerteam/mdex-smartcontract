@@ -60,6 +60,9 @@ contract MdexRoutingManagement is Ownable {
         tradingRoutes[_index].enable = true;
     }
 
+    function getRoute(uint256 routeIndex) public view returns (Route memory route ){
+        return tradingRoutes[routeIndex];
+    }
 
     function allRoutesLength() public view returns (uint256) {
         return tradingRoutes.length;
