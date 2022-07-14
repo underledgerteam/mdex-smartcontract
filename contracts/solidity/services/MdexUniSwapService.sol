@@ -15,20 +15,30 @@ contract MdexUniSwapService is IMdexService {
         FACTORY = _factory;
     }
 
-    function uniSwap(address token1, address token2, uint256 amount, address reciever) internal {
+    function uniSwap(address tokenIn, address tokenOut, uint256 amount, address reciever) internal {
         address[] memory path = new address[](2);
-        path[0] = token1;
-        path[1] = token2;
+        path[0] = tokenIn;
+        path[1] = tokenOut;
 
-        IERC20(token1).transferFrom(msg.sender, address(this), amount);
-        IERC20(token1).approve(address(ROUTER), amount);
+        IERC20(tokenIn).transferFrom(msg.sender, address(this), amount);
+        IERC20(tokenIn).approve(address(ROUTER), amount);
         uint256[] memory amountOutMin = ROUTER.getAmountsOut(amount, path);
         ROUTER.swapTokensForExactTokens(amountOutMin[1], amount, path, reciever, block.timestamp);
     }
 
-    function _swap(address token1, address token2, uint256 amount, address reciever) internal override {
+    function _swap(address tokenIn, address tokenOut, uint256 amount, address reciever) internal override {
         require(msg.sender == address(controller), "Only Controller Call");
-        uniSwap(token1, token2, amount, reciever);
+        uniSwap(tokenIn, tokenOut, amount, reciever);
     }
+
+    function _getDestinationReturnAmount(address tokenIn, address tokenOut, uint256 amount) internal override view returns(uint256 token2Amount){
+        address[] memory path = new address[](2);
+        path[0] = tokenIn;
+        path[1] = tokenOut;
+
+        uint256[] memory amounts = ROUTER.getAmountsOut(amount, path);
+        token2Amount = amounts[1];
+    }
+
 
 }

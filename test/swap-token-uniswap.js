@@ -17,7 +17,6 @@ describe('TEST SWAP TOKEN UNISWAP', () => {
   let multiSigWallet;
   let mdexController;
   let mdexUniSwapService;
-  let mdexRoute;
   beforeEach(async () => {
     [deployer, user1, user2, user3, user4, user5] = await ethers.getSigners();
 

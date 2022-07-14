@@ -20,6 +20,11 @@ contract MdexController is Ownable, Pausable, MdexRoutingManagement {
         multisigWallet = _multisigWallet;
     }
 
+    function getDestinationReturnAmount(address tokenIn, address tokenOut, uint256 amount, uint256 routeIndex) external view returns(uint256){
+        IMdexService service = tradingRoutes[routeIndex].service;
+        return service.getDestinationReturnAmount(tokenIn, tokenOut, amount);
+    }
+
     function swap(address tokenIn, address tokenOut, uint256 amount, uint256 routeIndex) external whenNotPaused {
         require(IERC20(tokenIn).balanceOf(msg.sender) >= amount, "not enough erc20 balance");
         IERC20(tokenIn).transferFrom(msg.sender, address(this), amount);
@@ -41,6 +46,7 @@ contract MdexController is Ownable, Pausable, MdexRoutingManagement {
             uint256 srcAmount = srcAmounts[i];
            _swap(tradingRouteIndex, tokenIn, tokenOut, srcAmount, msg.sender);
         }
+        // colect fee
         _swap(routes[0], tokenIn, stableCoin, netAmount, multisigWallet);
     } 
 

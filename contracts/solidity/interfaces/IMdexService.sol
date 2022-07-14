@@ -15,10 +15,16 @@ abstract contract IMdexService {
         _;
     }
 
-    function _swap(address token1, address token2, uint256 amount, address reciever) internal virtual;
-
-    function swap(address token1, address token2, uint256 amount, address reciever) public onlyController {
-        _swap(token1, token2, amount, reciever);
+    function getDestinationReturnAmount(address tokenIn, address tokenOut, uint256 amount) public onlyController view returns(uint256 token2Amount){
+        token2Amount = _getDestinationReturnAmount(tokenIn, tokenOut, amount);
     }
+
+    function swap(address tokenIn, address tokenOut, uint256 amount, address reciever) public onlyController {
+        _swap(tokenIn, tokenOut, amount, reciever);
+    }
+    function _swap(address tokenIn, address tokenOut, uint256 amount, address reciever) internal virtual;
+
+    function _getDestinationReturnAmount(address tokenIn, address tokenOut, uint256 amount) internal virtual view returns(uint256 token2Amount);
+
 
 }
