@@ -59,3 +59,5 @@ contract MdexCurveService is IMdexService {
     }
 
 }
+
+// npx hardhat verrify --network rinkeby 0x591BA2d7f355779047bD3Bcbd6624fe76dD16BCf "0xc346a421101d6a21fc4dffe60f3a2c4dd6188974" "0x32d28eF675e596786Dd777638Ca96A9714a9b41A"
