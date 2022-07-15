@@ -27,7 +27,6 @@ async function main() {
   console.log('Curve AddressProvider deployed to:', provider.address);
   console.log('Curve Registry deployed to:', registry.address);
   console.log('Curve PoolInfo deployed to:', poolInfo.address);
-  console.log('Curve LP Token deployed to:', curveToken.address);
 }
 
 main().catch((error) => {

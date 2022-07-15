@@ -1,18 +1,9 @@
 const { ethers } = require('hardhat');
 const hre = require('hardhat');
 require('dotenv').config();
-// Curve AddressProvider deployed to: 0x60C5B111CC4Fa2FeFca04E3a039088a8D0216532
-// Curve Registry deployed to: 0x51d7122E7a6307c5685B2fCFa9856D02702C09E6
-// Curve PoolInfo deployed to: 0xEfC2d6a06c6363F89dB5e24B573085b2fE7F9273
-// Curve LP Token deployed to: 0xE8103f32a9F07ca2bdB7271fE0a93441ef33Ef2e
 
 async function main() {
-  const CurveToken = await ethers.getContractFactory('CurveToken');
-  curveToken = await CurveToken.deploy('MDEX-LP', 'LP-TOKEN');
-  await curveToken.deployed();
-
-  const registryAddress = '0x51d7122E7a6307c5685B2fCFa9856D02702C09E6';
-  const curveTokenAddress = curveToken.address;
+  const registryAddress = '0x32d28eF675e596786Dd777638Ca96A9714a9b41A';
 
   const token0Name = 'LAT';
   const token1Name = 'MCH';
@@ -24,7 +15,13 @@ async function main() {
     '0xFFFFFFFFFFFFFFFF000000000000000000000000000000000000000000000000';
 
   const accounts = await hre.ethers.getSigners();
-  const deployer = '0xe9D2e454968379426BB6b0a92ffaf20A60ff579d';
+  const deployer = '0x2BA9a6C68D39EFEc15C2c048124B4f6dAac5d6fd';
+
+  const CurveToken = await ethers.getContractFactory('CurveToken');
+  curveToken = await CurveToken.deploy('MDEX-LP', 'LP-TOKEN');
+  await curveToken.deployed();
+
+  const curveTokenAddress = curveToken.address;
 
   const Pool = await hre.ethers.getContractFactory('Pool2Assets');
   pool = await Pool.deploy(
