@@ -53,6 +53,8 @@ Contract Addres for using in our project
 | `Uniswap Router` | Ethereum Rinkeby Testnet | **0x1E35e4F59aF5eAD9100b0152129836A5E1d73e37**|
 | `Uniswap Factory` | Ethereum Rinkeby Testnet | **0xC5d1087c591D61ce9e386f12729562F961E39CB1**|
 | `Uniswap Service` | Ethereum Rinkeby Testnet | **0x44011Bf2077eC44Ea646730e246Cd66A15Aef5ed**|
+| `Curve Service` | Ethereum Rinkeby Testnet | **0xbc1A3Eee159a768feD46Bdd4B9D5F7E1F13256ed**|
 | `Multisig Wallet` | Ethereum Rinkeby Testnet | **0x99c0Ca1094b09B4f8ea4A6dc3Bd2F5B26639B642**|
 | `Mdex Best Rate Query` | Ethereum Rinkeby Testnet | **0xECA4c9390F438Eb3De75eC60B36ac1d99833D872**|
+
 
