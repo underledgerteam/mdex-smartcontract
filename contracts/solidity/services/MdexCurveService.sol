@@ -19,11 +19,10 @@ contract MdexCurveService is IMdexService {
         int128 j;
         IERC20(tokenIn).transferFrom(address(controller), address(this), amount);
         (pool)  = curveRegistry.find_pool_for_coins(tokenIn, tokenOut, 0);
-        (i, j) = _findIndexToken(tokenIn, tokenOut);
-        (min_dy) = ICurveSwap(pool).get_dy(i, j, amount);
+        (i, j) = _findIndexToken(tokenIn, tokenOut, pool);
+        (min_dy) = ICurveSwap(pool).get_dy_underlying(i, j, amount);
         IERC20(tokenIn).approve(pool, amount);
         ICurveSwap(pool).exchange(i, j, amount, min_dy, reciever);
-       
     }
     function _swap(address tokenIn, address tokenOut, uint256 amount, address reciever) internal override {
         require(msg.sender == address(controller), "Only Controller Call");
@@ -32,15 +31,17 @@ contract MdexCurveService is IMdexService {
     function _getDestinationReturnAmount(address tokenIn, address tokenOut, uint256 amount) internal override view returns(uint256 token2Amount){
         address pool;
         uint256 min_dy;
-        (pool)  = curveRegistry.find_pool_for_coins(tokenIn, tokenOut, 0);
-        (min_dy) = ICurveSwap(pool).get_dy_underlying(0, 1, amount);
+        int128 i;
+        int128 j;
+        (pool) = curveRegistry.find_pool_for_coins(tokenIn, tokenOut, 0);
+        (i, j) = _findIndexToken(tokenIn, tokenOut, pool);
+        (min_dy) = ICurveSwap(pool).get_dy_underlying(i, j, amount);
         return min_dy;
     }
 
-    function _findIndexToken(address tokenIn, address tokenOut) private view returns(int128 indexI, int128 indexJ){
-        address pool = curveRegistry.find_pool_for_coins(tokenIn, tokenOut, 0);
+    function _findIndexToken(address tokenIn, address tokenOut, address pool) private view returns(int128 indexI, int128 indexJ){
         address[2] memory coins = curveRegistry.get_coins(pool);
-
+        
         require(tokenIn != tokenOut, "Destination token can not be source token");
 
         indexI = -1;
