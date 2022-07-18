@@ -1,16 +1,16 @@
-require("dotenv").config();
+require('dotenv').config();
 
-require("@nomiclabs/hardhat-etherscan");
-require("@nomiclabs/hardhat-waffle");
-require("hardhat-gas-reporter");
-require("solidity-coverage");
-require("@nomiclabs/hardhat-etherscan");
-require("@nomiclabs/hardhat-vyper");
-require("xdeployer");
+require('@nomiclabs/hardhat-etherscan');
+require('@nomiclabs/hardhat-waffle');
+require('hardhat-gas-reporter');
+require('solidity-coverage');
+require('@nomiclabs/hardhat-etherscan');
+require('@nomiclabs/hardhat-vyper');
+require('xdeployer');
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
+task('accounts', 'Prints the list of accounts', async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners();
 
   for (const account of accounts) {
@@ -18,9 +18,9 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
-const DEFAULT_ENDPOINT = "http://localhost:8545";
+const DEFAULT_ENDPOINT = 'http://localhost:8545';
 const DEFAULT_PRIVATE_KEY =
-  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+  'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
 const {
   PRIVATE_KEY,
@@ -44,16 +44,16 @@ const rinkebyEndpoint = RINKEBY_URL || DEFAULT_ENDPOINT;
 const rinkebyPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
 
 module.exports = {
-  defaultNetwork: "localhost",
+  defaultNetwork: 'localhost',
   networks: {
     hardhat: {
-      allowUnlimitedContractSize: true
+      allowUnlimitedContractSize: true,
     },
     ropsten: {
       url: ropstenEndpoint,
       accounts: [ropstenPrivateKey],
       chainId: 3,
-      allowUnlimitedContractSize: true
+      allowUnlimitedContractSize: true,
     },
     rinkeby: {
       url: rinkebyEndpoint,
@@ -73,7 +73,7 @@ module.exports = {
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
-    currency: "USD",
+    currency: 'USD',
   },
   etherscan: {
     apiKey: {
@@ -84,38 +84,38 @@ module.exports = {
     },
   },
   paths: {
-    sources: "./contracts",
-    tests: "./test",
-    cache: "./cache",
-    artifacts: "./artifacts",
+    sources: './contracts',
+    tests: './test',
+    cache: './cache',
+    artifacts: './artifacts',
   },
   vyper: {
     compilers: [
-      { version: "0.2.1" },
-      { version: "0.3.0" },
-      { version: "0.3.3" },
+      { version: '0.2.1' },
+      { version: '0.3.0' },
+      { version: '0.3.3' },
     ],
   },
   solidity: {
     compilers: [
       {
-        version: "0.8.11",
+        version: '0.8.11',
       },
       {
-        version: "0.8.0",
+        version: '0.8.0',
       },
       {
-        version: "0.5.0",
+        version: '0.5.0',
       },
       {
-        version: "0.5.16",
+        version: '0.5.16',
       },
       {
-        version: "0.6.11",
+        version: '0.6.11',
       },
       {
-        version: "0.6.12"
-      }
+        version: '0.6.12',
+      },
     ],
   },
   settings: {
@@ -125,11 +125,11 @@ module.exports = {
     },
   },
   xdeploy: {
-    contract: "",
-    constructorArgsPath: "",
-    salt: "",
+    contract: '',
+    constructorArgsPath: '',
+    salt: '',
     signer: PRIVATE_KEY,
-    networks: ["rinkeby", "ropsten"],
+    networks: ['rinkeby', 'ropsten'],
     rpcUrls: [RINKEBY_URL, ROPSTEN_URL],
   },
 

@@ -13,7 +13,7 @@
     "test-net": "hardhat test --network rinkeby",
     "test-all": "hardhat test --network hardhat test/*.js",
     "lint": "solhint --max-warnings 20 \"contracts/**/*.sol\"",
-    "coverage": "hardhat coverage"
+    "coverage": "hardhat coverage --network hardhat"
   },
   "author": "",
   "license": "ISC",
@@ -45,5 +45,8 @@
     "solhint": "^3.3.7",
     "solidity-coverage": "^0.7.21",
     "xdeployer": "^1.1.14"
+  },
+  "dependencies": {
+    "ganache-cli": "^6.12.2"
   }
 }

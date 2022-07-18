@@ -1,10 +1,6 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 
-function printSeperator() {
-  console.log('\n====================================\n');
-}
-
 describe('TEST UNISWAP POOL', () => {
   let deployer;
   let user1;
@@ -49,10 +45,6 @@ describe('TEST UNISWAP POOL', () => {
     await tokenA.mint(user1.address, initialToken);
     await tokenB.mint(user1.address, initialToken);
   });
-
-  printSeperator();
-  console.log('Deploy Pool');
-  printSeperator();
 
   it('Use Case #1 : Should Create Pair', async () => {
     pairLengthBefore = await factory.allPairsLength();

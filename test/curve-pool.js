@@ -1,10 +1,6 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 
-function printSeperator() {
-  console.log('\n====================================\n');
-}
-
 describe('TEST CURVE POOL', () => {
   let deployer;
   let provider;
@@ -73,10 +69,6 @@ describe('TEST CURVE POOL', () => {
     await pool1.deployed();
     await pool2.deployed();
   });
-
-  printSeperator();
-  console.log('Deploy Pool ');
-  printSeperator();
 
   it('Use Case #1 : Should Add Liquidity', async () => {
     liquidity1 = 10000;
