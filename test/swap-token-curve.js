@@ -1,10 +1,6 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 
-function printSeperator() {
-  console.log('\n====================================\n');
-}
-
 describe('TEST SWAP TOKEN CURVE', () => {
   let deployer;
   let provider;

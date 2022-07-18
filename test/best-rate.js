@@ -1,10 +1,6 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 
-function printSeperator() {
-  console.log('\n====================================\n');
-}
-
 describe('TEST BEST RATE', () => {
   let deployer;
   let provider;
@@ -213,10 +209,6 @@ describe('TEST BEST RATE', () => {
     await mdexBestRateQuery.deployed();
   });
 
-  printSeperator();
-  console.log('Deploy Best Rate ');
-  printSeperator();
-
   it('Use Case #1 : Should selected best rate', async () => {
     const data = await mdexBestRateQuery.oneRoute(
       tokenA.address,
@@ -236,7 +228,5 @@ describe('TEST BEST RATE', () => {
       [0, 1],
       5,
     );
-
-    console.log(data);
   });
 });
