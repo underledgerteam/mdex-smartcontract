@@ -46,15 +46,15 @@ Contract Addres for using in our project
 
 | Name | Chain | Address |
 | --- | --- | --- |
-| `Mdex Controller` | Ethereum Rinkeby Testnet | **0xC346a421101D6a21FC4dFfE60F3a2c4Dd6188974**|
+| `Mdex Controller` | Ethereum Rinkeby Testnet | **0x165834eDd4A46B2Bc343f5Be824B403849728E95**|
 | `Latte Token` | Ethereum Rinkeby Testnet | **0xe842709994fd15889C77749806F7D4C0e9775D41**|
 | `Mocha Token` | Ethereum Rinkeby Testnet | **0x985623ec22501b59954B5Fe6557C8Fe518B00B67**|
 | `Test Token` | Ethereum Rinkeby Testnet | **0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9**|
 | `Uniswap Router` | Ethereum Rinkeby Testnet | **0x1E35e4F59aF5eAD9100b0152129836A5E1d73e37**|
 | `Uniswap Factory` | Ethereum Rinkeby Testnet | **0xC5d1087c591D61ce9e386f12729562F961E39CB1**|
-| `Uniswap Service` | Ethereum Rinkeby Testnet | **0x44011Bf2077eC44Ea646730e246Cd66A15Aef5ed**|
-| `Curve Service` | Ethereum Rinkeby Testnet | **0xbc1A3Eee159a768feD46Bdd4B9D5F7E1F13256ed**|
-| `Multisig Wallet` | Ethereum Rinkeby Testnet | **0x99c0Ca1094b09B4f8ea4A6dc3Bd2F5B26639B642**|
-| `Mdex Best Rate Query` | Ethereum Rinkeby Testnet | **0xECA4c9390F438Eb3De75eC60B36ac1d99833D872**|
+| `Uniswap Service` | Ethereum Rinkeby Testnet | **0x37eb2AB6932Ef9a355F76e399D9786F40E41190a**|
+| `Curve Service` | Ethereum Rinkeby Testnet | **0x7b20117521c09084025DE7614FE8759C4e70d779**|
+| `Multisig Wallet` | Ethereum Rinkeby Testnet | **0x392B676BAA75f5c24296B3F18991667D90756c4e**|
+| `Mdex Best Rate Query` | Ethereum Rinkeby Testnet | **0x3e14fe391F3B89A5baE68D9F807379B0A586731c**|
 
 
