@@ -8,5 +8,4 @@ module.exports = [
     '0x586f45ef74679373efafcef08f7035fb699f40dd',
     '0x56e1175b24b440c57ea6677a50bff4bc461ff60f',
   ],
-  '0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9',
 ];

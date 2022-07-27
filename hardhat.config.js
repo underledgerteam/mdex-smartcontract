@@ -44,7 +44,7 @@ const rinkebyEndpoint = RINKEBY_URL || DEFAULT_ENDPOINT;
 const rinkebyPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
 
 module.exports = {
-  defaultNetwork: 'localhost',
+  defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
       allowUnlimitedContractSize: true,
@@ -99,6 +99,9 @@ module.exports = {
   solidity: {
     compilers: [
       {
+        version: '0.8.15',
+      },
+      {
         version: '0.8.11',
       },
       {
@@ -125,12 +128,13 @@ module.exports = {
     },
   },
   xdeploy: {
-    contract: '',
+    contract: 'MdexCrossChainSwap',
     constructorArgsPath: '',
-    salt: '',
+    salt: 'DEPLOY_MDEX_asdasdasd_BY_PRAasdsdMES_sadasdasdasxxxxaadasdasdasd',
     signer: PRIVATE_KEY,
-    networks: ['rinkeby', 'ropsten'],
-    rpcUrls: [RINKEBY_URL, ROPSTEN_URL],
+    networks: ['rinkeby', 'goerli'],
+    rpcUrls: [RINKEBY_URL, GOERLI_URL],
+    gasLimit: 1.2 * 10 ** 7,
   },
 
   // view more Document: https://github.com/pcaversaccio/xdeployer
