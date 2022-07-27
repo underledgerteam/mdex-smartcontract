@@ -6,8 +6,7 @@ module.exports = async function main() {
     'MdexCurveService',
   );
   const mdexCurveService = await MdexCurveService.deploy(
-    process.env.CONTROLLER,
-    process.env.CURVE_SERVICE,
+    '0xe2e0DfA2dC80d847F6B6B9D67FE0fDa07B10EE5a',
   );
 
   await mdexCurveService.deployed();

@@ -3,7 +3,7 @@ const curveService = require('./curveswap-service');
 
 async function main() {
   await uniswapService();
-  // await curveService();
+  await curveService();
 }
 
 main().catch((error) => {

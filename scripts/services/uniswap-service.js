@@ -6,9 +6,7 @@ module.exports = async function main() {
     'MdexUniSwapService',
   );
   const mdexUniSwapService = await MdexUniSwapService.deploy(
-    process.env.CONTROLLER,
-    process.env.UNISWAP_ROUTER,
-    process.env.UNISWAP_FACTORY,
+    '0xe2e0DfA2dC80d847F6B6B9D67FE0fDa07B10EE5a',
   );
 
   await mdexUniSwapService.deployed();

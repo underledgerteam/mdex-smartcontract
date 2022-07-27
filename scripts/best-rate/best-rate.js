@@ -4,9 +4,7 @@ module.exports = async function main() {
   const MdexBestRateQuery = await hre.ethers.getContractFactory(
     'MdexBestRateQuery',
   );
-  const mdexBestRateQuery = await MdexBestRateQuery.deploy(
-    process.env.CONTROLLER,
-  );
+  const mdexBestRateQuery = await MdexBestRateQuery.deploy();
 
   await mdexBestRateQuery.deployed();
 };
