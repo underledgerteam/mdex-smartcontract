@@ -6,16 +6,25 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../amm/periphery/interfaces/IUniswapV2Router02.sol";
 import "../amm/core/interfaces/IUniswapV2Factory.sol";
 import "hardhat/console.sol";
-contract MdexUniSwapService is IMdexService {
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-    IUniswapV2Router02 public immutable ROUTER;
-    IUniswapV2Factory public immutable FACTORY;
-    constructor(address _controller, IUniswapV2Router02 _router, IUniswapV2Factory _factory) IMdexService(_controller){
+contract MdexUniSwapService is IMdexService, Ownable {
+    IUniswapV2Router02 public ROUTER;
+    IUniswapV2Factory public FACTORY;
+
+    constructor(address _controller) IMdexService(_controller) {}
+
+    function setUniSwapService(IUniswapV2Router02 _router, IUniswapV2Factory _factory) public onlyOwner {
         ROUTER = _router;
         FACTORY = _factory;
     }
 
-    function uniSwap(address tokenIn, address tokenOut, uint256 amount, address reciever) internal {
+    function uniSwap(
+        address tokenIn,
+        address tokenOut,
+        uint256 amount,
+        address reciever
+    ) internal {
         address[] memory path = new address[](2);
         path[0] = tokenIn;
         path[1] = tokenOut;
@@ -26,12 +35,21 @@ contract MdexUniSwapService is IMdexService {
         ROUTER.swapTokensForExactTokens(amountOutMin[1], amount, path, reciever, block.timestamp);
     }
 
-    function _swap(address tokenIn, address tokenOut, uint256 amount, address reciever) internal override {
+    function _swap(
+        address tokenIn,
+        address tokenOut,
+        uint256 amount,
+        address reciever
+    ) internal override {
         require(msg.sender == address(controller), "Only Controller Call");
         uniSwap(tokenIn, tokenOut, amount, reciever);
     }
 
-    function _getDestinationReturnAmount(address tokenIn, address tokenOut, uint256 amount) internal override view returns(uint256 token2Amount){
+    function _getDestinationReturnAmount(
+        address tokenIn,
+        address tokenOut,
+        uint256 amount
+    ) internal view override returns (uint256 token2Amount) {
         address[] memory path = new address[](2);
         path[0] = tokenIn;
         path[1] = tokenOut;
@@ -39,6 +57,4 @@ contract MdexUniSwapService is IMdexService {
         uint256[] memory amounts = ROUTER.getAmountsOut(amount, path);
         token2Amount = amounts[1];
     }
-
-
 }

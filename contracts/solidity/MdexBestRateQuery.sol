@@ -4,16 +4,24 @@ pragma solidity ^0.8.0;
 
 import "./interfaces/IMdexController.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract MdexBestRateQuery{
+contract MdexBestRateQuery is Ownable {
     using SafeMath for uint256;
 
     IMdexController public mdex;
-    constructor(IMdexController _mdex) {
+
+    function setContrller(IMdexController _mdex) public onlyOwner {
         mdex = _mdex;
     }
-    function oneRoute(address tokenIn, address tokenOut, uint256 amount, uint256[] calldata routes) external view returns( uint256 routeIndex, uint256 amountOut) {
-        for(uint i = 0; i < routes.length; i++) {
+
+    function oneRoute(
+        address tokenIn,
+        address tokenOut,
+        uint256 amount,
+        uint256[] calldata routes
+    ) external view returns (uint256 routeIndex, uint256 amountOut) {
+        for (uint256 i = 0; i < routes.length; i++) {
             uint256 route = routes[i];
             uint256 _amountOut = _getRate(tokenIn, tokenOut, amount, route);
             if (_amountOut > amountOut) {
@@ -23,8 +31,22 @@ contract MdexBestRateQuery{
         }
     }
 
-    function splitTwoRoutes(address tokenIn, address tokenOut, uint256 amount, uint256[] calldata routes, uint256 percentStep) external view returns (uint256[2] memory routeIndexs, uint256[2] memory volumns, uint256 amountOut){
-       require(percentStep != 0 && percentStep < 100 && 100 % percentStep == 0, "This percent step is not allowed"); 
+    function splitTwoRoutes(
+        address tokenIn,
+        address tokenOut,
+        uint256 amount,
+        uint256[] calldata routes,
+        uint256 percentStep
+    )
+        external
+        view
+        returns (
+            uint256[2] memory routeIndexs,
+            uint256[2] memory volumns,
+            uint256 amountOut
+        )
+    {
+        require(percentStep != 0 && percentStep < 100 && 100 % percentStep == 0, "This percent step is not allowed");
         for (uint256 currentStep = 0; currentStep <= 50; currentStep += percentStep) {
             for (uint256 i = 0; i < routes.length; i++) {
                 for (uint256 j = 0; j < routes.length; j++) {
@@ -41,7 +63,7 @@ contract MdexBestRateQuery{
                         currentStep
                     );
 
-                    if(_amountOut > amountOut) {
+                    if (_amountOut > amountOut) {
                         amountOut = _amountOut;
                         routeIndexs = [routes[i], routes[j]];
                         volumns = [currentStep, 100 - currentStep];
@@ -52,16 +74,18 @@ contract MdexBestRateQuery{
     }
 
     function _getRate(
-        address tokenIn, 
-        address tokenOut, 
-        uint256 amount, 
+        address tokenIn,
+        address tokenOut,
+        uint256 amount,
         uint256 routeIndex
-    ) 
-    private
-    view 
-    returns(uint256)
-    {
-        bytes memory payload = abi.encodeWithSelector(mdex.getDestinationReturnAmount.selector, tokenIn, tokenOut, amount, routeIndex);
+    ) private view returns (uint256) {
+        bytes memory payload = abi.encodeWithSelector(
+            mdex.getDestinationReturnAmount.selector,
+            tokenIn,
+            tokenOut,
+            amount,
+            routeIndex
+        );
 
         (bool success, bytes memory data) = address(mdex).staticcall(payload);
 
@@ -73,16 +97,18 @@ contract MdexBestRateQuery{
     }
 
     function _getRateTwoRoutes(
-        address  src,
-        address  dest,
+        address src,
+        address dest,
         uint256 amount,
         uint256 route1,
         uint256 route2,
         uint256 percent
     )
-    private
-    view
-    returns (uint256) // amountOut
+        private
+        view
+        returns (
+            uint256 // amountOut
+        )
     {
         uint256 amountIn1 = amount.mul(percent).div(100);
         uint256 amountIn2 = amount.sub(amountIn1);

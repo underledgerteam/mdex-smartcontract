@@ -7,28 +7,50 @@ import "../interfaces/ICurveSwap.sol";
 import "../interfaces/ICurveRegistry.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
-contract MdexCurveService is IMdexService {
-    ICurveRegistry public immutable curveRegistry;
-    constructor( address _controller, ICurveRegistry _curve) IMdexService(_controller){
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract MdexCurveService is IMdexService, Ownable {
+    ICurveRegistry public curveRegistry;
+
+    constructor(address _controller) IMdexService(_controller) {}
+
+    function setCurve(ICurveRegistry _curve) public onlyOwner {
         curveRegistry = _curve;
     }
-    function curveSwap(address tokenIn, address tokenOut, uint256 amount, address reciever) internal {
+
+    function curveSwap(
+        address tokenIn,
+        address tokenOut,
+        uint256 amount,
+        address reciever
+    ) internal {
         uint256 min_dy;
         address pool;
         int128 i;
         int128 j;
         IERC20(tokenIn).transferFrom(address(controller), address(this), amount);
-        (pool)  = curveRegistry.find_pool_for_coins(tokenIn, tokenOut, 0);
+        (pool) = curveRegistry.find_pool_for_coins(tokenIn, tokenOut, 0);
         (i, j) = _findIndexToken(tokenIn, tokenOut, pool);
         (min_dy) = ICurveSwap(pool).get_dy_underlying(i, j, amount);
         IERC20(tokenIn).approve(pool, amount);
         ICurveSwap(pool).exchange(i, j, amount, min_dy, reciever);
     }
-    function _swap(address tokenIn, address tokenOut, uint256 amount, address reciever) internal override {
+
+    function _swap(
+        address tokenIn,
+        address tokenOut,
+        uint256 amount,
+        address reciever
+    ) internal override {
         require(msg.sender == address(controller), "Only Controller Call");
         curveSwap(tokenIn, tokenOut, amount, reciever);
     }
-    function _getDestinationReturnAmount(address tokenIn, address tokenOut, uint256 amount) internal override view returns(uint256 token2Amount){
+
+    function _getDestinationReturnAmount(
+        address tokenIn,
+        address tokenOut,
+        uint256 amount
+    ) internal view override returns (uint256 token2Amount) {
         address pool;
         uint256 min_dy;
         int128 i;
@@ -39,13 +61,17 @@ contract MdexCurveService is IMdexService {
         return min_dy;
     }
 
-    function _findIndexToken(address tokenIn, address tokenOut, address pool) private view returns(int128 indexI, int128 indexJ){
+    function _findIndexToken(
+        address tokenIn,
+        address tokenOut,
+        address pool
+    ) private view returns (int128 indexI, int128 indexJ) {
         address[2] memory coins = curveRegistry.get_coins(pool);
-        
+
         require(tokenIn != tokenOut, "Destination token can not be source token");
 
         indexI = -1;
-        indexJ = -1;    
+        indexJ = -1;
 
         indexI = tokenIn == coins[0] ? int128(0) : indexI;
         indexI = tokenIn == coins[1] ? int128(1) : indexI;
@@ -57,7 +83,4 @@ contract MdexCurveService is IMdexService {
 
         return (indexI, indexJ);
     }
-
 }
-
-// npx hardhat verrify --network rinkeby 0x591BA2d7f355779047bD3Bcbd6624fe76dD16BCf "0xc346a421101d6a21fc4dffe60f3a2c4dd6188974" "0x32d28eF675e596786Dd777638Ca96A9714a9b41A"
