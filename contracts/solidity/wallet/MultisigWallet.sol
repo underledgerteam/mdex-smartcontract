@@ -120,19 +120,39 @@ contract MultiSigWallet {
         emit WithdrawERC20(msg.sender, to, value);
     }
 
-    function _updateData(uint256 id) private {
+    function updateTransaction(uint256 id) public onlyTeam {
         Transaction storage transaction = transactionById[id];
         if (transaction.status == StatusTransaction.QUEUE && transaction.timeLock <= block.timestamp) {
             transaction.status = StatusTransaction.READY;
         }
     }
 
-    function uppdateData() public onlyTeam {
+    function getNumberTransactionStatusQueue() public view returns (uint256 numberTransaction) {
         for (uint256 i = 1; i < transactionCount + 1; i++) {
-            _updateData(i);
+            if(transactionById[i].status == StatusTransaction.QUEUE) {
+                numberTransaction += 1;
+            }
         }
+        return numberTransaction;
     }
+    function getTransactionStatusQueue() public view returns (Transaction[] memory) {
+       (uint256 numberTransaction) = getNumberTransactionStatusQueue();
+        Transaction[] memory transactions = new Transaction[](numberTransaction);
+        uint256 count;
+        for (uint256 i = 1; i < transactionCount + 1; i++) {
+            if(transactionById[i].status == StatusTransaction.QUEUE) {
+                if(count <= numberTransaction) {
+                    transactions[count] = transactionById[i];
+                    count++;
+                }else{
+                    count = 0;
+                }
+            }
 
+        }
+        return transactions;
+    }
+   
     function getBalance() public view onlyTeam returns (uint256) {
         return IERC20(stableCoin).balanceOf(address(this));
     }
@@ -198,8 +218,8 @@ contract MultiSigWallet {
 
     function getTransactions() public view returns (Transaction[] memory) {
         Transaction[] memory transactions = new Transaction[](transactionCount);
-        for (uint256 i = 0; i < transactionCount; i++) {
-            transactions[i] = transactionById[i];
+        for (uint256 i = 1; i < transactionCount + 1; i++) {
+            transactions[i-1] = transactionById[i];
         }
         return transactions;
     }
