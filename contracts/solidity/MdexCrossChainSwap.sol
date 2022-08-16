@@ -12,21 +12,37 @@ import "./MdexController.sol";
 contract MdexCrossChainSwap is Ownable, Pausable {
     using SafeMath for uint256;
 
-    address private stableCoin;
-    IMdexCrossChainSwap private serviceCrossChainSwap;
-    MdexController private mdexController;
+    address public stableCoin;
+    IMdexCrossChainSwap public serviceCrossChainSwap;
+    MdexController public mdexController;
 
     function swap(
         address tokenIn,
         uint256 amount,
-        bytes calldata payload
+        uint256 routeIndex,
+        bytes calldata payload,
+        bytes calldata apiPayload
     ) external whenNotPaused {
         require(IERC20(tokenIn).balanceOf(msg.sender) >= amount, "not enough erc20 balance");
         IERC20(tokenIn).transferFrom(msg.sender, address(this), amount);
+        _swap(tokenIn, stableCoin, amount, routeIndex);
+        _crossChainSwap(IERC20(stableCoin).balanceOf(address(this)), payload, apiPayload);
+    }
 
-        // collect fee
-        _swap(tokenIn, stableCoin, amount);
-        _crossChainSwap(IERC20(stableCoin).balanceOf(address(this)), payload);
+    function spiltSwap(
+        address tokenIn,
+        uint256 amount,
+        uint256[] calldata routes,
+        uint256[] calldata srcAmounts,
+        bytes calldata payload,
+        bytes calldata apiPayload
+    ) external whenNotPaused {
+        require(routes.length > 0, "routes can not be empty");
+        require(routes.length == srcAmounts.length, "routes and srcAmounts lengths mismatch");
+        IERC20(tokenIn).transferFrom(msg.sender, address(this), amount);
+        IERC20(tokenIn).approve(address(mdexController), amount);
+        mdexController.spiltSwap(tokenIn, stableCoin, amount, routes, srcAmounts);
+        _crossChainSwap(IERC20(stableCoin).balanceOf(address(this)), payload, apiPayload);
     }
 
     function setPause() public onlyOwner {
@@ -52,14 +68,19 @@ contract MdexCrossChainSwap is Ownable, Pausable {
     function _swap(
         address tokenIn,
         address tokenOut,
-        uint256 amount
+        uint256 amount,
+        uint256 routeIndex
     ) private {
         IERC20(tokenIn).approve(address(mdexController), amount);
-        mdexController.swap(tokenIn, tokenOut, amount, 0);
+        mdexController.swap(tokenIn, tokenOut, amount, routeIndex);
     }
 
-    function _crossChainSwap(uint256 amount, bytes calldata payload) private {
+    function _crossChainSwap(
+        uint256 amount,
+        bytes calldata payload,
+        bytes calldata apiPayload
+    ) private {
         IERC20(stableCoin).approve(address(serviceCrossChainSwap), amount);
-        serviceCrossChainSwap.swap(amount, payload);
+        serviceCrossChainSwap.swap(amount, payload, apiPayload);
     }
 }

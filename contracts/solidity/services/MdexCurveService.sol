@@ -23,12 +23,12 @@ contract MdexCurveService is IMdexService, Ownable {
         address tokenOut,
         uint256 amount,
         address reciever
-    ) internal {
+    ) public {
         uint256 min_dy;
         address pool;
         int128 i;
         int128 j;
-        IERC20(tokenIn).transferFrom(address(controller), address(this), amount);
+        IERC20(tokenIn).transferFrom(msg.sender, address(this), amount);
         (pool) = curveRegistry.find_pool_for_coins(tokenIn, tokenOut, 0);
         (i, j) = _findIndexToken(tokenIn, tokenOut, pool);
         (min_dy) = ICurveSwap(pool).get_dy_underlying(i, j, amount);

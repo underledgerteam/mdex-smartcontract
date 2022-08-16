@@ -8,13 +8,15 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "../interfaces/IMdexCrossChainSwap.sol";
 import "../interfaces/IMdexService.sol";
+import "../interfaces/ISwap.sol";
 import "../amm/periphery/interfaces/IUniswapV2Router02.sol";
+import "../services/MdexUniSwapService.sol";
 
 contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
     IConnextHandler public immutable connext;
     address public immutable promiseRouter;
-    address private mdexCrossChain;
-    IUniswapV2Router02 public ROUTER;
+    address public mdexCrossChain;
+    MdexController public mdexController;
 
     mapping(uint32 => address) public mdexBridgeAddress;
     mapping(uint32 => address) public assetAddress;
@@ -42,43 +44,102 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         assetAddress[domainId] = tokenAdress;
     }
 
-    function serRouter(IUniswapV2Router02 router) public onlyOwner {
-        ROUTER = router;
+    function setController(MdexController _controller) public onlyOwner {
+        mdexController = _controller;
     }
 
-    function execute(bytes calldata payload) external whenNotPaused returns (bytes calldata) {
-        address[] memory path = new address[](2);
-        address reciever;
-        address tokenRecieve;
-        uint256 amount;
+    function singleSwap(bytes calldata data) external whenNotPaused returns (bytes calldata) {
         uint32 destinationDomain;
-        (reciever, tokenRecieve, amount, destinationDomain) = abi.decode(payload, (address, address, uint256, uint32));
-        path[0] = assetAddress[destinationDomain];
-        path[1] = tokenRecieve;
-        IERC20(assetAddress[destinationDomain]).approve(address(ROUTER), amount);
-        uint256[] memory amountOutMin = ROUTER.getAmountsOut(amount, path);
-        ROUTER.swapTokensForExactTokens(amountOutMin[1], amount, path, reciever, block.timestamp);
+        address sender;
+        address tokenDestinationAddress;
+        uint256 routeIndex;
+        uint256 amount;
 
-        return payload;
+        (sender, tokenDestinationAddress, amount, routeIndex, destinationDomain) = abi.decode(
+            data,
+            (address, address, uint256, uint256, uint32)
+        );
+
+        _swapToken(sender, assetAddress[destinationDomain], tokenDestinationAddress, amount, routeIndex);
+
+        return data;
     }
 
-    function connextSwap(uint256 amount, bytes calldata payload) internal {
+    function _swapToken(
+        address reciever,
+        address tokenIn,
+        address tokenOut,
+        uint256 amount,
+        uint256 routeIndex
+    ) internal {
+        // Route memory new_route = route;
+        string memory route_name = mdexController.getRoute(routeIndex).name;
+        address route_address = address(mdexController.getRoute(routeIndex).service);
+
+        if (keccak256(abi.encodePacked(route_name)) == keccak256(abi.encodePacked("UniSwap"))) {
+            IERC20(tokenIn).approve(route_address, amount);
+            ISwap(route_address).uniSwap(tokenIn, tokenOut, amount, reciever);
+        }
+        if (keccak256(abi.encodePacked(route_name)) == keccak256(abi.encodePacked("CurveSwap"))) {
+            IERC20(tokenIn).approve(route_address, amount);
+            ISwap(route_address).curveSwap(tokenIn, tokenOut, amount, reciever);
+        } else {
+            revert();
+        }
+    }
+
+    function connextSwap(
+        uint256 amount,
+        bytes calldata payload,
+        bytes calldata apiPayload
+    ) internal {
         uint32 originDomain;
         uint32 destinationDomain;
         address sender;
         address tokenDestinationAddress;
+        bytes calldata _payload = payload;
+        bytes calldata _apiPayload = apiPayload;
+        uint256 _amount = amount;
+        // api payload
+        bool isSpiltSwap;
+
+        (isSpiltSwap, ) = abi.decode(apiPayload, (bool, uint256));
 
         (sender, tokenDestinationAddress, originDomain, destinationDomain) = abi.decode(
             payload,
             (address, address, uint32, uint32)
         );
 
-        IERC20(assetAddress[originDomain]).transferFrom(msg.sender, address(this), amount);
-        IERC20(assetAddress[originDomain]).approve(address(connext), amount);
+        IERC20(assetAddress[originDomain]).transferFrom(msg.sender, address(this), _amount);
+        IERC20(assetAddress[originDomain]).approve(address(connext), _amount);
 
-        bytes memory data = abi.encode(sender, tokenDestinationAddress, amount, destinationDomain);
+        if (isSpiltSwap) {
+            _isNotSpiltSwap(_amount, _payload, _apiPayload);
+        } else {
+            _isNotSpiltSwap(_amount, _payload, _apiPayload);
+        }
+    }
 
-        bytes4 selector = bytes4(keccak256("execute(bytes)"));
+    function _isNotSpiltSwap(
+        uint256 amount,
+        bytes calldata payload,
+        bytes calldata apiPayload
+    ) internal {
+        uint32 originDomain;
+        uint32 destinationDomain;
+        address sender;
+        address tokenDestinationAddress;
+        uint256 routeIndex;
+        uint256 _amount = amount;
+
+        (, routeIndex) = abi.decode(apiPayload, (bool, uint256));
+        (sender, tokenDestinationAddress, originDomain, destinationDomain) = abi.decode(
+            payload,
+            (address, address, uint32, uint32)
+        );
+
+        bytes memory data = abi.encode(sender, tokenDestinationAddress, amount, routeIndex, destinationDomain);
+        bytes4 selector = bytes4(keccak256("singleSwap(bytes)"));
         bytes memory callData = abi.encodeWithSelector(selector, data);
 
         CallParams memory callParams = CallParams({
@@ -99,15 +160,19 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         XCallArgs memory xcallArgs = XCallArgs({
             params: callParams,
             transactingAssetId: assetAddress[originDomain],
-            amount: amount
+            amount: _amount
         });
 
         connext.xcall(xcallArgs);
     }
 
-    function _swap(uint256 amount, bytes calldata payload) internal override {
+    function _swap(
+        uint256 amount,
+        bytes calldata payload,
+        bytes calldata apiPayload
+    ) internal override {
         require(msg.sender == address(mdexCrossChain), "Only Mdex Cross-Chain Call");
-        connextSwap(amount, payload);
+        connextSwap(amount, payload, apiPayload);
     }
 
     function callback(

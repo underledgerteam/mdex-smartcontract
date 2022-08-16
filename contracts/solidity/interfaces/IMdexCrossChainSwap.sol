@@ -16,9 +16,17 @@ abstract contract IMdexCrossChainSwap {
         _;
     }
 
-    function _swap(uint256 amount, bytes calldata payload) internal virtual;
+    function _swap(
+        uint256 amount,
+        bytes calldata payload,
+        bytes calldata apiPayload
+    ) internal virtual;
 
-    function swap(uint256 amount, bytes calldata payload) public onlyThisContract {
-        _swap(amount, payload);
+    function swap(
+        uint256 amount,
+        bytes calldata payload,
+        bytes calldata apiPayload
+    ) public onlyThisContract {
+        _swap(amount, payload, apiPayload);
     }
 }

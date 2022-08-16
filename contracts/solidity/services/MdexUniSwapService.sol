@@ -24,7 +24,7 @@ contract MdexUniSwapService is IMdexService, Ownable {
         address tokenOut,
         uint256 amount,
         address reciever
-    ) internal {
+    ) public {
         address[] memory path = new address[](2);
         path[0] = tokenIn;
         path[1] = tokenOut;
