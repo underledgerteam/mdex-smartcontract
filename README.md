@@ -65,7 +65,7 @@ Contract Addres for using in our project
 | `Test Token` | Ethereum Rinkeby Testnet | **0x26FE8a8f86511d678d031a022E48FfF41c6a3e3b**|
 | `Uniswap Router` | Ethereum Goerli Testnet | **0x1027c51FE7DD497B858dfDE8b3548f73F29728Ce**|
 | `Uniswap Factory` | Ethereum Goerli Testnet | **0x94573E7509cDAE7CB28A089b40e50a40c52E119D**|
-| `Uniswap Service` | Ethereum Goerli Testnet | **0x0c936b01c40632827B45c73e31Df826421C3af14**|
+| `Uniswap Service` | Ethereum Goerli Testnet | **0x7953e6d98A9a0a509afCDbce1022C2B5b2154fA3**|
 | `Curve Service` | Ethereum Goerli Testnet | **0xdE67217fC51e9FE661738b788c7B8B755256eF9c**|
 | `Mdex Best Rate Query` | Ethereum Goerli Testnet | **0xd19C6F58B9D06C0C3198993Ee9C34C08BA57195e**|
 | `Mdex Cross Chain Swap` | Ethereum Goerli Testnet | **0x98bc0964247a367BDE859aD584F934e439B5D3ab**|
