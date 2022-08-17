@@ -15,7 +15,6 @@ import "../services/MdexUniSwapService.sol";
 contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
     IConnextHandler public immutable connext;
     address public immutable promiseRouter;
-    address public mdexCrossChain;
     MdexController public mdexController;
 
     mapping(uint32 => address) public mdexBridgeAddress;
@@ -33,7 +32,6 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
     ) IMdexCrossChainSwap(_mdexCrossChain) {
         connext = _connext;
         promiseRouter = _promiseRouter;
-        mdexCrossChain = _mdexCrossChain;
     }
 
     function setBridgeAddress(uint32 domainId, address brideAddress) public onlyOwner {
@@ -65,6 +63,28 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         return data;
     }
 
+    function spiltSwap(bytes calldata data) external whenNotPaused returns (bytes calldata) {
+        uint32 destinationDomain;
+        address sender;
+        address tokenDestinationAddress;
+        uint256 amount;
+        uint256[] memory routes;
+        uint256[] memory spiltAmount;
+
+        (sender, tokenDestinationAddress, amount, routes, spiltAmount, destinationDomain) = abi.decode(
+            data,
+            (address, address, uint256, uint256[], uint256[], uint32)
+        );
+
+        for (uint256 i = 0; i < routes.length; i++) {
+            uint256 tradingRouteIndex = routes[i];
+            uint256 srcAmount = spiltAmount[i];
+            _swapToken(sender, assetAddress[destinationDomain], tokenDestinationAddress, srcAmount, tradingRouteIndex);
+        }
+
+        return data;
+    }
+
     function _swapToken(
         address reciever,
         address tokenIn,
@@ -76,15 +96,13 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         string memory route_name = mdexController.getRoute(routeIndex).name;
         address route_address = address(mdexController.getRoute(routeIndex).service);
 
-        if (keccak256(abi.encodePacked(route_name)) == keccak256(abi.encodePacked("UniSwap"))) {
-            IERC20(tokenIn).approve(route_address, amount);
-            ISwap(route_address).uniSwap(tokenIn, tokenOut, amount, reciever);
-        }
         if (keccak256(abi.encodePacked(route_name)) == keccak256(abi.encodePacked("CurveSwap"))) {
             IERC20(tokenIn).approve(route_address, amount);
             ISwap(route_address).curveSwap(tokenIn, tokenOut, amount, reciever);
-        } else {
-            revert();
+        }
+        if (keccak256(abi.encodePacked(route_name)) == keccak256(abi.encodePacked("UniSwap"))) {
+            IERC20(tokenIn).approve(route_address, amount);
+            ISwap(route_address).uniSwap(tokenIn, tokenOut, amount, reciever);
         }
     }
 
@@ -103,7 +121,7 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         // api payload
         bool isSpiltSwap;
 
-        (isSpiltSwap, ) = abi.decode(apiPayload, (bool, uint256));
+        (isSpiltSwap, , , ) = abi.decode(apiPayload, (bool, uint256, uint256[], uint256[]));
 
         (sender, tokenDestinationAddress, originDomain, destinationDomain) = abi.decode(
             payload,
@@ -114,10 +132,65 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         IERC20(assetAddress[originDomain]).approve(address(connext), _amount);
 
         if (isSpiltSwap) {
-            _isNotSpiltSwap(_amount, _payload, _apiPayload);
+            _isSpiltSwap(_amount, _payload, _apiPayload);
         } else {
             _isNotSpiltSwap(_amount, _payload, _apiPayload);
         }
+    }
+
+    function _isSpiltSwap(
+        uint256 amount,
+        bytes calldata payload,
+        bytes calldata apiPayload
+    ) internal {
+        uint32 originDomain;
+        uint32 destinationDomain;
+        address sender;
+        address tokenDestinationAddress;
+        uint256 _amount = amount;
+        uint256[] memory routeIndex;
+        uint256[] memory spiltAmount;
+
+        (, , routeIndex, spiltAmount) = abi.decode(apiPayload, (bool, uint256, uint256[], uint256[]));
+        (sender, tokenDestinationAddress, originDomain, destinationDomain) = abi.decode(
+            payload,
+            (address, address, uint32, uint32)
+        );
+
+        bytes memory data = abi.encode(
+            sender,
+            tokenDestinationAddress,
+            amount,
+            routeIndex,
+            spiltAmount,
+            destinationDomain
+        );
+
+        bytes4 selector = bytes4(keccak256("spiltSwap(bytes)"));
+        bytes memory callData = abi.encodeWithSelector(selector, data);
+
+        CallParams memory callParams = CallParams({
+            to: mdexBridgeAddress[destinationDomain],
+            callData: callData,
+            originDomain: originDomain,
+            destinationDomain: destinationDomain,
+            agent: sender,
+            recovery: sender,
+            forceSlow: false,
+            receiveLocal: false,
+            callback: address(this),
+            callbackFee: 0,
+            relayerFee: 0,
+            slippageTol: 9995
+        });
+
+        XCallArgs memory xcallArgs = XCallArgs({
+            params: callParams,
+            transactingAssetId: assetAddress[originDomain],
+            amount: _amount
+        });
+
+        connext.xcall(xcallArgs);
     }
 
     function _isNotSpiltSwap(
@@ -132,7 +205,7 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         uint256 routeIndex;
         uint256 _amount = amount;
 
-        (, routeIndex) = abi.decode(apiPayload, (bool, uint256));
+        (, routeIndex, , ) = abi.decode(apiPayload, (bool, uint256, uint256[], uint256[]));
         (sender, tokenDestinationAddress, originDomain, destinationDomain) = abi.decode(
             payload,
             (address, address, uint32, uint32)
@@ -171,7 +244,7 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         bytes calldata payload,
         bytes calldata apiPayload
     ) internal override {
-        require(msg.sender == address(mdexCrossChain), "Only Mdex Cross-Chain Call");
+        require(msg.sender == address(mdexCrossChainSwap), "Only Mdex Cross-Chain Call");
         connextSwap(amount, payload, apiPayload);
     }
 

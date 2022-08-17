@@ -70,7 +70,7 @@ contract MdexCrossChainSwap is Ownable, Pausable {
         address tokenOut,
         uint256 amount,
         uint256 routeIndex
-    ) private {
+    ) internal {
         IERC20(tokenIn).approve(address(mdexController), amount);
         mdexController.swap(tokenIn, tokenOut, amount, routeIndex);
     }
