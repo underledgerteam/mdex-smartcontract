@@ -56,8 +56,8 @@ Contract Addres for using in our project
 | `Curve Service` | Ethereum Rinkeby Testnet | **0x49534faFD4AeDc6FE84b9e0a80Aaf68E57851D01**|
 | `Multisig Wallet` | Ethereum Rinkeby Testnet | **0x2A5e8342EEcD3DCD22D4720A6f3B7dDFCA129868**|
 | `Mdex Best Rate Query` | Ethereum Rinkeby Testnet | **0x92CA3294eB72b212e53Eb4b900d0D691f9cd4F4d**|
-| `Mdex Cross Chain Swap` | Ethereum Rinkeby Testnet | **0x8e61Fb5bB993143F9689111d5BBdf5498870aCb3**|
-| `Connext Service` | Ethereum Rinkeby Testnet | **0x1cb570f9b0B6b94a851092523A42144bA1c43a88**|
+| `Mdex Cross Chain Swap` | Ethereum Rinkeby Testnet | **0xB5c1737663bc4f5D23E4d0c0971e3C275E1aa736**|
+| `Connext Service` | Ethereum Rinkeby Testnet | **0x4201aDfcE227Aff382500EF0d10F4137216A9613**|
 | `Mdex Controller` | Ethereum Goerli Testnet | **0xe2e0DfA2dC80d847F6B6B9D67FE0fDa07B10EE5a**|
 | `Multisig Wallet` | Ethereum Goerli Testnet | **0x5D9b61B62D27E310FE8679a76d27a558bD0E016D**|
 | `Latte Token` | Ethereum Goerli Testnet | **0xfd88678C924B140c84232Ea907d5a60D709B8f9a**|
@@ -68,7 +68,7 @@ Contract Addres for using in our project
 | `Uniswap Service` | Ethereum Goerli Testnet | **0x650146d2aC4DE67E2852772ba93698ab67fBdA27**|
 | `Curve Service` | Ethereum Goerli Testnet | **0x8f9c1e92F973409C26b01B49210783600D2Ca463**|
 | `Mdex Best Rate Query` | Ethereum Goerli Testnet | **0xd19C6F58B9D06C0C3198993Ee9C34C08BA57195e**|
-| `Mdex Cross Chain Swap` | Ethereum Goerli Testnet | **0xDa6f926d5230Af3D1bF72E6D5255D1BaFF7d74cC**|
-| `Connext Service` | Ethereum Goerli Testnet | **0xF278D2CFd4391f68AAbd4c2E6897104394d364e1**|
+| `Mdex Cross Chain Swap` | Ethereum Goerli Testnet | **0x2594986EF5DDF0CdBfF07F2376AF1aD5397770d7**|
+| `Connext Service` | Ethereum Goerli Testnet | **0x92f09CDaE15671B33b4dE7816Ab0d45A904B41A9**|
 
 
