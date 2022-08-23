@@ -129,30 +129,30 @@ contract MultiSigWallet {
 
     function getNumberTransactionStatusQueue() public view returns (uint256 numberTransaction) {
         for (uint256 i = 1; i < transactionCount + 1; i++) {
-            if(transactionById[i].status == StatusTransaction.QUEUE) {
+            if (transactionById[i].status == StatusTransaction.QUEUE) {
                 numberTransaction += 1;
             }
         }
         return numberTransaction;
     }
+
     function getTransactionStatusQueue() public view returns (Transaction[] memory) {
-       (uint256 numberTransaction) = getNumberTransactionStatusQueue();
+        uint256 numberTransaction = getNumberTransactionStatusQueue();
         Transaction[] memory transactions = new Transaction[](numberTransaction);
         uint256 count;
         for (uint256 i = 1; i < transactionCount + 1; i++) {
-            if(transactionById[i].status == StatusTransaction.QUEUE) {
-                if(count <= numberTransaction) {
+            if (transactionById[i].status == StatusTransaction.QUEUE) {
+                if (count <= numberTransaction) {
                     transactions[count] = transactionById[i];
                     count++;
-                }else{
+                } else {
                     count = 0;
                 }
             }
-
         }
         return transactions;
     }
-   
+
     function getBalance() public view onlyTeam returns (uint256) {
         return IERC20(stableCoin).balanceOf(address(this));
     }
@@ -219,7 +219,7 @@ contract MultiSigWallet {
     function getTransactions() public view returns (Transaction[] memory) {
         Transaction[] memory transactions = new Transaction[](transactionCount);
         for (uint256 i = 1; i < transactionCount + 1; i++) {
-            transactions[i-1] = transactionById[i];
+            transactions[i - 1] = transactionById[i];
         }
         return transactions;
     }
@@ -239,7 +239,7 @@ contract MultiSigWallet {
 
         transaction.status = StatusTransaction.SUCCESS;
 
-        IERC20(stableCoin).transfer(msg.sender, transaction.value);
+        IERC20(stableCoin).transfer(transaction.to, transaction.value);
 
         emit ExecuteTransaction(msg.sender, transactionId);
     }
