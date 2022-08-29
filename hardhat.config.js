@@ -30,6 +30,7 @@ const {
   GOERLI_URL,
   OPTIMISIM_GOERLI_URL,
   ETHERSCAN_API_KEY,
+  OPTIMISIMSCAN_API_KEY,
 } = process.env;
 
 const kovanEndpoint = KOVAN_URL || DEFAULT_ENDPOINT;
@@ -75,9 +76,32 @@ module.exports = {
       chainId: 5,
     },
     optimismGoerli: {
-      url: optimismGoerliEndpoint,
+      url: 'https://optimism-goerli.infura.io/v3/7672e2bf7cbe427e8cd25b0f1dde65cf',
       accounts: [optimismGoerliPrivateKey],
       chainId: 420,
+      companionNetworks: {
+        hub: 'goerli',
+      },
+      verify: {
+        etherscan: {
+          apiKey: `${ETHERSCAN_API_KEY}`,
+          apiUrl: 'https://blockscout.com/optimism/goerli',
+        },
+      },
+    },
+    'optimism-goerli': {
+      accounts: [optimismGoerliPrivateKey],
+      chainId: 420,
+      url: 'https://optimism-goerli.infura.io/v3/7672e2bf7cbe427e8cd25b0f1dde65cf',
+      companionNetworks: {
+        hub: 'goerli',
+      },
+      verify: {
+        etherscan: {
+          apiKey: '5RGY4CR7JQGRN2BXU8EEID27EKTM6K74P3',
+          apiUrl: 'https://blockscout.com/optimism/goerli',
+        },
+      },
     },
   },
   gasReporter: {
@@ -90,8 +114,27 @@ module.exports = {
       rinkeby: `${ETHERSCAN_API_KEY}`,
       kovan: `${ETHERSCAN_API_KEY}`,
       goerli: `${ETHERSCAN_API_KEY}`,
-      optimismGoerli: `${ETHERSCAN_API_KEY}`,
+      optimismGoerli: '5RGY4CR7JQGRN2BXU8EEID27EKTM6K74P3',
+      'optimism-goerli': '5RGY4CR7JQGRN2BXU8EEID27EKTM6K74P3',
     },
+    customChains: [
+      {
+        network: 'optimismGoerli',
+        chainId: 420,
+        urls: {
+          apiURL: 'https://blockscout.com/optimism/goerli/api',
+          browserURL: 'https://blockscout.com/optimism/goerli',
+        },
+      },
+      {
+        network: 'optimism-goerli',
+        chainId: 420,
+        urls: {
+          apiURL: 'https://blockscout.com/optimism/goerli/api',
+          browserURL: 'https://blockscout.com/optimism/goerli',
+        },
+      },
+    ],
   },
   paths: {
     sources: './contracts',
@@ -149,3 +192,5 @@ module.exports = {
 
   // view more Document: https://github.com/pcaversaccio/xdeployer
 };
+
+//npx hardhat verify --network optimism-goerli 0x95E6e6a2b08663b7c6911bBE17e65f1D0664CB78 "0xe37f1f55eab648dA87047A03CB03DeE3d3fe7eC7" "0x7aA60f0D8E234EdCbcB119d0e569376E93431Ee2" "0x817F5b1eE8a26C80Fab7E74E58AE88e5b4DaB615"
