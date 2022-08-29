@@ -181,13 +181,14 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
             callback: address(this),
             callbackFee: 0,
             relayerFee: 0,
-            slippageTol: 9995
+            destinationMinOut: (_amount / 100) * 97
         });
 
         XCallArgs memory xcallArgs = XCallArgs({
             params: callParams,
-            transactingAssetId: assetAddress[originDomain],
-            amount: _amount
+            transactingAsset: assetAddress[originDomain],
+            transactingAmount: _amount,
+            originMinOut: (_amount / 100) * 97
         });
 
         connext.xcall(xcallArgs);
@@ -227,13 +228,14 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
             callback: address(this),
             callbackFee: 0,
             relayerFee: 0,
-            slippageTol: 9995
+            destinationMinOut: (_amount / 100) * 97
         });
 
         XCallArgs memory xcallArgs = XCallArgs({
             params: callParams,
-            transactingAssetId: assetAddress[originDomain],
-            amount: _amount
+            transactingAsset: assetAddress[originDomain],
+            transactingAmount: _amount,
+            originMinOut: (_amount / 100) * 97
         });
 
         connext.xcall(xcallArgs);
