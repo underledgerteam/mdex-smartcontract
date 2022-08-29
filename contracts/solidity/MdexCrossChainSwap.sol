@@ -16,6 +16,9 @@ contract MdexCrossChainSwap is Ownable, Pausable {
     IMdexCrossChainSwap public serviceCrossChainSwap;
     MdexController public mdexController;
 
+    // isSpiltSwap, routeIndex, routeIndex[], spiltAmount[]
+    // case 1 : no spilt swap => false, 1, [], []
+    // case 2 : yes spilt swap => true, 0, [1,2], [10000000000,10000000000]
     function swap(
         address tokenIn,
         uint256 amount,
@@ -29,7 +32,7 @@ contract MdexCrossChainSwap is Ownable, Pausable {
         _crossChainSwap(IERC20(stableCoin).balanceOf(address(this)), payload, apiPayload);
     }
 
-    function spiltSwap(
+    function splitSwap(
         address tokenIn,
         uint256 amount,
         uint256[] calldata routes,

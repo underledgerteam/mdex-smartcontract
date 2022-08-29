@@ -63,7 +63,7 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         return data;
     }
 
-    function spiltSwap(bytes calldata data) external whenNotPaused returns (bytes calldata) {
+    function splitSwap(bytes calldata data) external whenNotPaused returns (bytes calldata) {
         uint32 destinationDomain;
         address sender;
         address tokenDestinationAddress;
@@ -132,13 +132,13 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         IERC20(assetAddress[originDomain]).approve(address(connext), _amount);
 
         if (isSpiltSwap) {
-            _isSpiltSwap(_amount, _payload, _apiPayload);
+            _isSplitSwap(_amount, _payload, _apiPayload);
         } else {
-            _isNotSpiltSwap(_amount, _payload, _apiPayload);
+            _isNotSplitSwap(_amount, _payload, _apiPayload);
         }
     }
 
-    function _isSpiltSwap(
+    function _isSplitSwap(
         uint256 amount,
         bytes calldata payload,
         bytes calldata apiPayload
@@ -166,7 +166,7 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
             destinationDomain
         );
 
-        bytes4 selector = bytes4(keccak256("spiltSwap(bytes)"));
+        bytes4 selector = bytes4(keccak256("splitSwap(bytes)"));
         bytes memory callData = abi.encodeWithSelector(selector, data);
 
         CallParams memory callParams = CallParams({
@@ -193,7 +193,7 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         connext.xcall(xcallArgs);
     }
 
-    function _isNotSpiltSwap(
+    function _isNotSplitSwap(
         uint256 amount,
         bytes calldata payload,
         bytes calldata apiPayload
