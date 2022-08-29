@@ -28,6 +28,7 @@ const {
   ROPSTEN_URL,
   KOVAN_URL,
   GOERLI_URL,
+  OPTIMISIM_GOERLI_URL,
   ETHERSCAN_API_KEY,
 } = process.env;
 
@@ -42,6 +43,9 @@ const goerliPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
 
 const rinkebyEndpoint = RINKEBY_URL || DEFAULT_ENDPOINT;
 const rinkebyPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
+
+const optimismGoerliEndpoint = OPTIMISIM_GOERLI_URL || DEFAULT_ENDPOINT;
+const optimismGoerliPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
 
 module.exports = {
   defaultNetwork: 'hardhat',
@@ -70,6 +74,11 @@ module.exports = {
       accounts: [goerliPrivateKey],
       chainId: 5,
     },
+    optimismGoerli: {
+      url: optimismGoerliEndpoint,
+      accounts: [optimismGoerliPrivateKey],
+      chainId: 420,
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
@@ -81,6 +90,7 @@ module.exports = {
       rinkeby: `${ETHERSCAN_API_KEY}`,
       kovan: `${ETHERSCAN_API_KEY}`,
       goerli: `${ETHERSCAN_API_KEY}`,
+      optimismGoerli: `${ETHERSCAN_API_KEY}`,
     },
   },
   paths: {
