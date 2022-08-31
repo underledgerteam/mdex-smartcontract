@@ -114,24 +114,15 @@ module.exports = {
       rinkeby: `${ETHERSCAN_API_KEY}`,
       kovan: `${ETHERSCAN_API_KEY}`,
       goerli: `${ETHERSCAN_API_KEY}`,
-      optimismGoerli: '5RGY4CR7JQGRN2BXU8EEID27EKTM6K74P3',
-      'optimism-goerli': '5RGY4CR7JQGRN2BXU8EEID27EKTM6K74P3',
+      'optimism-goerli': 'QARMJBU2UYEAR87JNMGAQ83VS5P9R8U56R',
     },
     customChains: [
-      {
-        network: 'optimismGoerli',
-        chainId: 420,
-        urls: {
-          apiURL: 'https://blockscout.com/optimism/goerli/api',
-          browserURL: 'https://blockscout.com/optimism/goerli',
-        },
-      },
       {
         network: 'optimism-goerli',
         chainId: 420,
         urls: {
-          apiURL: 'https://blockscout.com/optimism/goerli/api',
-          browserURL: 'https://blockscout.com/optimism/goerli',
+          apiURL: 'https://api-goerli-optimism.etherscan.io/api',
+          browserURL: 'https://goerli-optimism.etherscan.io',
         },
       },
     ],
@@ -192,5 +183,3 @@ module.exports = {
 
   // view more Document: https://github.com/pcaversaccio/xdeployer
 };
-
-//npx hardhat verify --network optimism-goerli 0x95E6e6a2b08663b7c6911bBE17e65f1D0664CB78 "0xe37f1f55eab648dA87047A03CB03DeE3d3fe7eC7" "0x7aA60f0D8E234EdCbcB119d0e569376E93431Ee2" "0x817F5b1eE8a26C80Fab7E74E58AE88e5b4DaB615"

@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@connext/nxtp-contracts/contracts/core/connext/interfaces/IConnextHandler.sol";
+import "@connext/nxtp-contracts/contracts/core/promise/interfaces/ICallback.sol";
 import "@connext/nxtp-contracts/contracts/core/connext/libraries/LibConnextStorage.sol";
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
@@ -12,7 +13,7 @@ import "../interfaces/ISwap.sol";
 import "../amm/periphery/interfaces/IUniswapV2Router02.sol";
 import "../services/MdexUniSwapService.sol";
 
-contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
+contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap, ICallback {
     IConnextHandler public immutable connext;
     address public immutable promiseRouter;
     MdexController public mdexController;
@@ -46,7 +47,7 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         mdexController = _controller;
     }
 
-    function singleSwap(bytes calldata data) external whenNotPaused returns (bytes calldata) {
+    function singleSwap(bytes calldata data) external whenNotPaused returns (bytes memory) {
         uint32 destinationDomain;
         address sender;
         address tokenDestinationAddress;
@@ -63,7 +64,7 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap {
         return data;
     }
 
-    function splitSwap(bytes calldata data) external whenNotPaused returns (bytes calldata) {
+    function splitSwap(bytes calldata data) external whenNotPaused returns (bytes memory) {
         uint32 destinationDomain;
         address sender;
         address tokenDestinationAddress;
