@@ -46,29 +46,30 @@ Contract Addres for using in our project
 
 | Name | Chain | Address |
 | --- | --- | --- |
-| `Mdex Controller` | Ethereum Rinkeby Testnet | **0x8207ef2260e98b5Ae3aF0419c22c5a76e9267De2**|
-| `Latte Token` | Ethereum Rinkeby Testnet | **0xe842709994fd15889C77749806F7D4C0e9775D41**|
-| `Mocha Token` | Ethereum Rinkeby Testnet | **0x985623ec22501b59954B5Fe6557C8Fe518B00B67**|
-| `Test Token` | Ethereum Rinkeby Testnet | **0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9**|
-| `Uniswap Router` | Ethereum Rinkeby Testnet | **0x55849B87FeF28093d493f6a3f507d01C55C0643D**|
-| `Uniswap Factory` | Ethereum Rinkeby Testnet | **0xe207e4dcABc40459f877CEFA2Ff790f711B9d541**|
-| `Uniswap Service` | Ethereum Rinkeby Testnet | **0xC808999584831F68B5E1a34D07Cb9D8D636cDb66**|
-| `Curve Service` | Ethereum Rinkeby Testnet | **0x49534faFD4AeDc6FE84b9e0a80Aaf68E57851D01**|
-| `Multisig Wallet` | Ethereum Rinkeby Testnet | **0x2A5e8342EEcD3DCD22D4720A6f3B7dDFCA129868**|
-| `Mdex Best Rate Query` | Ethereum Rinkeby Testnet | **0x92CA3294eB72b212e53Eb4b900d0D691f9cd4F4d**|
-| `Mdex Cross Chain Swap` | Ethereum Rinkeby Testnet | **0xB5c1737663bc4f5D23E4d0c0971e3C275E1aa736**|
-| `Connext Service` | Ethereum Rinkeby Testnet | **0x4201aDfcE227Aff382500EF0d10F4137216A9613**|
 | `Mdex Controller` | Ethereum Goerli Testnet | **0xe2e0DfA2dC80d847F6B6B9D67FE0fDa07B10EE5a**|
 | `Multisig Wallet` | Ethereum Goerli Testnet | **0x5D9b61B62D27E310FE8679a76d27a558bD0E016D**|
 | `Latte Token` | Ethereum Goerli Testnet | **0xfd88678C924B140c84232Ea907d5a60D709B8f9a**|
 | `Mocha Token` | Ethereum Goerli Testnet | **0xa3C91B4e8051c155AE080A6A16B4923F6FB711f3**|
-| `Test Token` | Ethereum Goerli Testnet | **0x26FE8a8f86511d678d031a022E48FfF41c6a3e3b**|
+| `Test Token` | Ethereum Goerli Testnet | **0x7ea6eA49B0b0Ae9c5db7907d139D9Cd3439862a1**|
 | `Uniswap Router` | Ethereum Goerli Testnet | **0x1027c51FE7DD497B858dfDE8b3548f73F29728Ce**|
 | `Uniswap Factory` | Ethereum Goerli Testnet | **0x94573E7509cDAE7CB28A089b40e50a40c52E119D**|
 | `Uniswap Service` | Ethereum Goerli Testnet | **0x650146d2aC4DE67E2852772ba93698ab67fBdA27**|
 | `Curve Service` | Ethereum Goerli Testnet | **0x8f9c1e92F973409C26b01B49210783600D2Ca463**|
 | `Mdex Best Rate Query` | Ethereum Goerli Testnet | **0xd19C6F58B9D06C0C3198993Ee9C34C08BA57195e**|
-| `Mdex Cross Chain Swap` | Ethereum Goerli Testnet | **0x2594986EF5DDF0CdBfF07F2376AF1aD5397770d7**|
-| `Connext Service` | Ethereum Goerli Testnet | **0x92f09CDaE15671B33b4dE7816Ab0d45A904B41A9**|
+| `Mdex Cross Chain Swap` | Ethereum Goerli Testnet | **0x9b2080309298D60884A05A1d6cc4a0CF1379375e**|
+| `Connext Service` | Ethereum Goerli Testnet | **0xCb674cE19407D7BF0d076e6190e8Fcc383D5DfDF**|
+| `Mdex Controller` | Optimism Goerli Testnet | **0x93C2DCE0cc0B9aFA001834c76d26180CE6FC367d**|
+| `Multisig Wallet` | Optimism Goerli Testnet | **0xB2468b3CF340D748774bb0139F835b1cFDA86F40**|
+| `Latte Token` | Optimism Goerli Testnet | **0x938d9CE22e4F76499b3382d6182e232D16BB410c**|
+| `Mocha Token` | Optimism Goerli Testnet | **0x575beC1c6072F1A5102472ac642db17df60F2B6c**|
+| `Test Token` | Optimism Goerli Testnet | **0x68Db1c8d85C09d546097C65ec7DCBFF4D6497CbF**|
+| `Uniswap Router` | Optimism Goerli Testnet | **0x20f5A827a91Cb2BfB89B6aedbA035dbA95D49a18**|
+| `Uniswap Factory` | Optimism Goerli Testnet | **0xCc34AF1A337c6eab33e696Fc4b6E2516585F164A**|
+| `Uniswap Service` | Optimism Goerli Testnet | **0x9dc23763731BCBa39765E299917081348d95375b**|
+| `Curve Service` | Optimism Goerli Testnet | **0x4602986D33C30fD7765E729cc7f30256919D6FCc**|
+| `Mdex Best Rate Query` | Optimism Goerli Testnet | **0x6E4dF47ac4570789586d4E3dbc9423f3CeD5AC73**|
+| `Mdex Cross Chain Swap` | Optimism Goerli Testnet | **0x817F5b1eE8a26C80Fab7E74E58AE88e5b4DaB615**|
+| `Connext Service` | Optimism Goerli Testnet | **0xa73937b2a823a4154e09193250558f0503509DdD**|
+
 
 
