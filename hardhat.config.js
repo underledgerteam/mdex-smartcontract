@@ -30,7 +30,6 @@ const {
   GOERLI_URL,
   OPTIMISIM_GOERLI_URL,
   ETHERSCAN_API_KEY,
-  OPTIMISIMSCAN_API_KEY,
 } = process.env;
 
 const kovanEndpoint = KOVAN_URL || DEFAULT_ENDPOINT;
@@ -45,7 +44,6 @@ const goerliPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
 const rinkebyEndpoint = RINKEBY_URL || DEFAULT_ENDPOINT;
 const rinkebyPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
 
-const optimismGoerliEndpoint = OPTIMISIM_GOERLI_URL || DEFAULT_ENDPOINT;
 const optimismGoerliPrivateKey = PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
 
 module.exports = {
@@ -74,20 +72,6 @@ module.exports = {
       url: goerliEndpoint,
       accounts: [goerliPrivateKey],
       chainId: 5,
-    },
-    optimismGoerli: {
-      url: 'https://optimism-goerli.infura.io/v3/7672e2bf7cbe427e8cd25b0f1dde65cf',
-      accounts: [optimismGoerliPrivateKey],
-      chainId: 420,
-      companionNetworks: {
-        hub: 'goerli',
-      },
-      verify: {
-        etherscan: {
-          apiKey: `${ETHERSCAN_API_KEY}`,
-          apiUrl: 'https://blockscout.com/optimism/goerli',
-        },
-      },
     },
     'optimism-goerli': {
       accounts: [optimismGoerliPrivateKey],
@@ -121,8 +105,10 @@ module.exports = {
         network: 'optimism-goerli',
         chainId: 420,
         urls: {
-          apiURL: 'https://api-goerli-optimism.etherscan.io/api',
-          browserURL: 'https://goerli-optimism.etherscan.io',
+          // apiURL: 'https://api-goerli-optimism.etherscan.io/api',
+          // browserURL: 'https://goerli-optimism.etherscan.io',
+          apiURL: 'https://blockscout.com/optimism/goerli/api',
+          browserURL: 'https://blockscout.com/optimism/goerli',
         },
       },
     ],

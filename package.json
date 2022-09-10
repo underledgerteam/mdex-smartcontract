@@ -9,7 +9,7 @@
     "deploy:ropsten": "npx hardhat run --network ropsten",
     "deploy:kovan": "npx hardhat run --network kovan",
     "deploy:goerli": "npx hardhat run --network goerli",
-    "deploy:optimismGoerli": "npx hardhat run --network optimismGoerli",
+    "deploy:optimism-goerli": "npx hardhat run --network optimism-goerli",
     "test": "hardhat test --network hardhat",
     "test-net": "hardhat test --network rinkeby",
     "test-all": "hardhat test --network hardhat test/*.js",
