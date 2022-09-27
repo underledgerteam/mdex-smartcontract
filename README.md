@@ -57,7 +57,7 @@ Contract Addres for using in our project
 | `Curve Service` | Ethereum Goerli Testnet | **0x8f9c1e92F973409C26b01B49210783600D2Ca463**|
 | `Mdex Best Rate Query` | Ethereum Goerli Testnet | **0xd19C6F58B9D06C0C3198993Ee9C34C08BA57195e**|
 | `Mdex Cross Chain Swap` | Ethereum Goerli Testnet | **0x9b2080309298D60884A05A1d6cc4a0CF1379375e**|
-| `Connext Service` | Ethereum Goerli Testnet | **0xCb674cE19407D7BF0d076e6190e8Fcc383D5DfDF**|
+| `Connext Service` | Ethereum Goerli Testnet | **0xc9fdEcd300f68cd062176C320e9172b5E64a15bF**|
 | `Mdex Controller` | Optimism Goerli Testnet | **0x93C2DCE0cc0B9aFA001834c76d26180CE6FC367d**|
 | `Multisig Wallet` | Optimism Goerli Testnet | **0xB2468b3CF340D748774bb0139F835b1cFDA86F40**|
 | `Latte Token` | Optimism Goerli Testnet | **0x938d9CE22e4F76499b3382d6182e232D16BB410c**|
@@ -69,7 +69,7 @@ Contract Addres for using in our project
 | `Curve Service` | Optimism Goerli Testnet | **0x4602986D33C30fD7765E729cc7f30256919D6FCc**|
 | `Mdex Best Rate Query` | Optimism Goerli Testnet | **0x6E4dF47ac4570789586d4E3dbc9423f3CeD5AC73**|
 | `Mdex Cross Chain Swap` | Optimism Goerli Testnet | **0x817F5b1eE8a26C80Fab7E74E58AE88e5b4DaB615**|
-| `Connext Service` | Optimism Goerli Testnet | **0xa73937b2a823a4154e09193250558f0503509DdD**|
+| `Connext Service` | Optimism Goerli Testnet | **0xbD75c4C3BE19403B32Cbc31E4DF2b51636f477b0**|
 
 
 
