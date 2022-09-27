@@ -161,7 +161,7 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap, ICallback {
         bytes memory data = abi.encode(
             sender,
             tokenDestinationAddress,
-            amount,
+            (_amount / 100) * 97,
             routeIndex,
             spiltAmount,
             destinationDomain
@@ -213,7 +213,13 @@ contract ConnextService is Ownable, Pausable, IMdexCrossChainSwap, ICallback {
             (address, address, uint32, uint32)
         );
 
-        bytes memory data = abi.encode(sender, tokenDestinationAddress, amount, routeIndex, destinationDomain);
+        bytes memory data = abi.encode(
+            sender,
+            tokenDestinationAddress,
+            (_amount / 100) * 97,
+            routeIndex,
+            destinationDomain
+        );
         bytes4 selector = bytes4(keccak256("singleSwap(bytes)"));
         bytes memory callData = abi.encodeWithSelector(selector, data);
 
