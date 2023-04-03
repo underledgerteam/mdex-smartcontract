@@ -24,6 +24,31 @@ npx prettier '**/*.{json,sol,md}' --write
 npx solhint 'contracts/**/*.sol'
 npx solhint 'contracts/**/*.sol' --fix
 ```
+# How to deploy Smart Contract
+
+**1. Deploy MdexController**
+
+```shell
+npm run deploy:rinkeby  scripts/controllers/index.js
+```
+**2. Deploy MdexUniSwapService and MdexCurveService**
+   - In the file curveswap-service.js or uniswap-service.js you must set the parameter in constructor are MdexController Address
+   ```javaScript
+   
+      const hre = require('hardhat');
+      require('dotenv').config();
+      
+      module.exports = async function main() {
+        const MdexCurveService = await hre.ethers.getContractFactory(
+          'MdexCurveService',
+        );
+        const mdexCurveService = await MdexCurveService.deploy(
+          'MdexController Contract Address',
+        );
+        
+        await mdexCurveService.deployed();
+      };
+   ```
 
 # Etherscan verification
 
